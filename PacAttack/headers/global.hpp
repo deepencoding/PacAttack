@@ -1,20 +1,40 @@
 #pragma once
 
-constexpr unsigned int CELL_SIZE = 16;
-constexpr unsigned int FONT_HEIGHT = 16;
-constexpr unsigned int MAP_WIDTH = 21;
-constexpr unsigned int MAP_HEIGHT = 21;
+static constexpr unsigned char CELL_SIZE = 16;
+static constexpr unsigned char FONT_HEIGHT = 16;
+static constexpr unsigned char MAP_WIDTH = 21;
+static constexpr unsigned char MAP_HEIGHT = 21;
 
-constexpr unsigned char SCREEN_RESIZE_FACTOR = 2;
+static constexpr unsigned char SCREEN_RESIZE_FACTOR = 2;
 
-int SCREEN_WIDTH = 21 * 16 * 2;
-int SCREEN_HEIGHT = (16 + (21 * 16)) * 2;
+static constexpr unsigned short SCREEN_WIDTH = MAP_WIDTH * CELL_SIZE;
+static constexpr unsigned short SCREEN_HEIGHT = (FONT_HEIGHT + (MAP_HEIGHT * CELL_SIZE));
 
-constexpr unsigned short FRAME_DURATION = 16667;
+static constexpr unsigned short FRAME_DURATION = 16667;
 
-//enum class Cell {
-//	Door = 0, Empty, Energizer, Pellet, Wall
-//};
+static constexpr unsigned char PACMAN_SPEED = 2;
+static constexpr unsigned char GHOST_SPEED = 2;
+
+enum Direction {
+	Right = 0, Up, Left, Down
+};
+
+static Direction get_opposite_dir(Direction dir)
+{
+	return static_cast<Direction>((dir + 2) % 4);
+}
+
 enum class Cell {
-	Empty, Wall
+	Empty, Wall, Pellet
+};
+
+struct Position
+{
+	short x;
+	short y;
+
+	bool operator == (Position& p)
+	{
+		return (this->x == p.x && this->y == p.y);
+	}
 };

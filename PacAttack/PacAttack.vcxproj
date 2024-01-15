@@ -143,10 +143,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Ghosts.cpp" />
+    <ClCompile Include="src\MapCollision.cpp" />
+    <ClCompile Include="src\Paccy.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\Ghosts.hpp" />
     <ClInclude Include="headers\global.hpp" />
+    <ClInclude Include="headers\MapCollision.hpp" />
+    <ClInclude Include="headers\Paccy.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
