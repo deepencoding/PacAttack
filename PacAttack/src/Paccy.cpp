@@ -13,7 +13,6 @@ void Paccy::Draw_Paccy(sf::RenderWindow& window)
     m_Sprite.setPosition(m_pos.x, m_pos.y);
     if (m_Texture.loadFromFile("assets\\images\\Pacman16.png"))
     {
-        std::cout << "Pacman texture loaded successfully" << std::endl;
         m_Sprite.setTexture(m_Texture);
         m_Sprite.setTextureRect(sf::IntRect(m_XIndex * m_TextureBit, m_YIndex * m_TextureBit, m_TextureBit, m_TextureBit));
     }
@@ -30,6 +29,16 @@ void Paccy::set_pos(short x, short y)
     m_pos = {
         x, y
     };
+}
+
+Position Paccy::get_pos() const
+{
+    return m_pos;
+}
+
+Direction Paccy::get_dir() const
+{
+    return m_direction;
 }
 
 void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)

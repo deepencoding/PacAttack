@@ -15,8 +15,12 @@ static constexpr unsigned short FRAME_DURATION = 16667;
 static constexpr unsigned char PACMAN_SPEED = 2;
 static constexpr unsigned char GHOST_SPEED = 2;
 
+static constexpr unsigned char CLYDE_DIST = 4;
+static constexpr unsigned char PINKY_DIST = 4;
+static constexpr unsigned char INKY_DIST = 2;
+
 enum Direction {
-	Right = 0, Up, Left, Down
+	Right = 0, Up, Left, Down, Undef
 };
 
 static Direction get_opposite_dir(Direction dir)
@@ -26,6 +30,10 @@ static Direction get_opposite_dir(Direction dir)
 
 enum class Cell {
 	Empty, Wall, Pellet
+};
+
+enum class GHOST {
+	BLINKY, CLYDE, PINKY, INKY
 };
 
 struct Position
