@@ -32,14 +32,24 @@ enum class Cell {
 	Empty, Wall, Pellet
 };
 
-enum class GHOST {
-	BLINKY, CLYDE, PINKY, INKY
+enum GHOST {
+	BLINKY = 0, CLYDE, PINKY, INKY
+};
+
+enum MODE {
+	SCATTER = 0, CHASE
 };
 
 struct Position
 {
 	short x;
 	short y;
+
+	Position () {}
+
+	Position (short _x, short _y)
+		: x(_x), y(_y)
+	{}
 
 	bool operator == (Position& p)
 	{

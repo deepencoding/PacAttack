@@ -25,6 +25,5 @@ private:
 	int m_XIndex = 0;
 	int m_YIndex = 0;
 	int m_TextureBit = 16;
-
 };
 

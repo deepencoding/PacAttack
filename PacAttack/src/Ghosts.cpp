@@ -5,8 +5,8 @@
 #include "../headers/Ghosts.hpp"
 
 Ghosts::Ghosts(GHOST N)
+    :m_Name(N)
 {
-    m_Name = N;
 }
 
 void Ghosts::Draw_Ghost(sf::RenderWindow& window)
@@ -19,7 +19,7 @@ void Ghosts::Draw_Ghost(sf::RenderWindow& window)
     }
     else
     {
-        std::cout << "Error loading pacman texture" << std::endl;
+        std::cout << "Error loading ghost texture" << std::endl;
     }
 
     switch (m_Name)
@@ -28,13 +28,13 @@ void Ghosts::Draw_Ghost(sf::RenderWindow& window)
         m_Sprite.setColor(sf::Color::Red);
         break;
     case GHOST::CLYDE:
-        m_Sprite.setColor(sf::Color::Color (241, 90, 34, 255));
+        m_Sprite.setColor(sf::Color::Color (255, 182, 85, 255));
         break;
     case GHOST::PINKY:
-        m_Sprite.setColor(sf::Color::Color (227, 61, 148, 255));
+        m_Sprite.setColor(sf::Color::Color (255, 182, 255, 255));
         break;
     case GHOST::INKY:
-        m_Sprite.setColor(sf::Color::Blue);
+        m_Sprite.setColor(sf::Color::Cyan);
         break;
     default:
         break;
@@ -53,6 +53,12 @@ void Ghosts::set_pos(short x, short y)
 Position Ghosts::get_pos() const
 {
     return m_pos;
+}
+
+void Ghosts::switch_mode()
+{
+    m_mode = static_cast<MODE>((m_mode + 1) % 1);
+    m_direction = get_opposite_dir(m_direction);
 }
 
 bool Ghosts::pacman_collision(Position i_pacman_pos) const
@@ -98,76 +104,118 @@ float Ghosts::get_target_dist(Direction i_dir) const
     return static_cast<float>(sqrt(pow(m_target.x - x, 2) + pow(m_target.y - y, 2)));
 }
 
+void Ghosts::reset_ghost(Position i_house, Position i_gate)
+{
+    m_mode = MODE::SCATTER;
+    use_door = (m_Name != GHOST::BLINKY);
+    m_direction = Direction::Right;
+    isFrightened = 0;
+    m_house = i_house;
+    m_gate = i_gate;
+    m_target = m_gate;
+}
+
 void Ghosts::update_target(Direction i_pacman_dir, Position i_pacman_pos, Position i_red_ghost_pos)
 {
-    switch (m_Name)
+    /*if (use_door)
     {
-    case GHOST::BLINKY:
-        m_target = i_pacman_pos;
-        break;
-    case GHOST::CLYDE:
-        m_target = i_pacman_pos;
-        if (sqrt(pow(i_pacman_pos.x - m_pos.x, 2) + pow(i_pacman_pos.y - m_pos.y, 2))
-            <= CELL_SIZE * CLYDE_DIST)
+        m_target = ;
+        use_door = false;
+        return;
+    }*/
+    if (m_mode == MODE::CHASE)
+    {
+        switch (m_Name)
         {
-            m_target.x = 0;
-            m_target.y = static_cast<short> (SCREEN_HEIGHT * SCREEN_RESIZE_FACTOR);
-        }
-        break;
-    case GHOST::PINKY:
-        m_target = i_pacman_pos;
-        switch (i_pacman_dir)
-        {
-        case Direction::Right:
-            m_target.x += PINKY_DIST * CELL_SIZE;
+        case GHOST::BLINKY:
+            m_target = i_pacman_pos;
             break;
-
-        case Direction::Up:
-            m_target.y -= PINKY_DIST * CELL_SIZE;
+        case GHOST::CLYDE:
+            if (sqrt(pow(i_pacman_pos.x - m_pos.x, 2) + pow(i_pacman_pos.y - m_pos.y, 2))
+                <= CELL_SIZE * CLYDE_DIST)
+            {
+                m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
+            }
+            else
+            {
+                m_target = i_pacman_pos;
+            }
             break;
+        case GHOST::PINKY:
+            m_target = i_pacman_pos;
+            switch (i_pacman_dir)
+            {
+            case Direction::Right:
+                m_target.x += PINKY_DIST * CELL_SIZE;
+                break;
 
-        case Direction::Left:
-            m_target.x -= PINKY_DIST * CELL_SIZE;
+            case Direction::Up:
+                m_target.y -= PINKY_DIST * CELL_SIZE;
+                break;
+
+            case Direction::Left:
+                m_target.x -= PINKY_DIST * CELL_SIZE;
+                break;
+
+            case Direction::Down:
+                m_target.y += PINKY_DIST * CELL_SIZE;
+                break;
+
+            default:
+                break;
+            }
             break;
+        case GHOST::INKY:
+            m_target = i_pacman_pos;
+            switch (i_pacman_dir)
+            {
+            case Direction::Right:
+                m_target.x += INKY_DIST * CELL_SIZE;
+                break;
 
-        case Direction::Down:
-            m_target.y += PINKY_DIST * CELL_SIZE;
+            case Direction::Up:
+                m_target.y -= INKY_DIST * CELL_SIZE;
+                break;
+
+            case Direction::Left:
+                m_target.x -= INKY_DIST * CELL_SIZE;
+                break;
+
+            case Direction::Down:
+                m_target.y += INKY_DIST * CELL_SIZE;
+                break;
+
+            default:
+                break;
+            }
+
+            m_target.x = (2 * m_target.x) - i_red_ghost_pos.x;
+            m_target.y = (2 * m_target.y) - i_red_ghost_pos.y;
+
             break;
-
         default:
             break;
         }
-        break;
-    case GHOST::INKY:
-        m_target = i_pacman_pos;
-        switch (i_pacman_dir)
+    }
+    else // SCATTER MODE
+    {
+        switch (m_Name)
         {
-        case Direction::Right:
-            m_target.x += INKY_DIST * CELL_SIZE;
+        case GHOST::BLINKY:
+            m_target = { SCREEN_WIDTH - CELL_SIZE , 0 };
             break;
-
-        case Direction::Up:
-            m_target.y -= INKY_DIST * CELL_SIZE;
+        case GHOST::CLYDE:
+            m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
             break;
-
-        case Direction::Left:
-            m_target.x -= INKY_DIST * CELL_SIZE;
+        case GHOST::PINKY:
+            m_target = { 0 , 0 };
             break;
-
-        case Direction::Down:
-            m_target.y += INKY_DIST * CELL_SIZE;
+        case GHOST::INKY:
+            m_target = { SCREEN_WIDTH - CELL_SIZE , SCREEN_HEIGHT - CELL_SIZE };
             break;
-
         default:
             break;
         }
-
-        m_target.x = (2 * m_target.x) - i_red_ghost_pos.x;
-        m_target.y = (2 * m_target.y) - i_red_ghost_pos.y;
-
-        break;
-    default:
-        break;
     }
 }
 
@@ -200,12 +248,31 @@ void Ghosts::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i
 
             if (get_target_dist(static_cast<Direction>(a)) < get_target_dist(optimal_dir))
                 optimal_dir = static_cast<Direction>(a);
+            else if (get_target_dist(static_cast<Direction>(a)) == get_target_dist(optimal_dir))
+            {
+                if (static_cast<Direction>(a) == Direction::Up || optimal_dir == Direction::Up)
+                    optimal_dir = Direction::Up;
+                else if (static_cast<Direction>(a) == Direction::Left || optimal_dir == Direction::Left)
+                    optimal_dir = Direction::Left;
+                else if (static_cast<Direction>(a) == Direction::Down || optimal_dir == Direction::Down)
+                    optimal_dir = Direction::Down;
+            }
         }
     }
 
     if (available_path > 1)
     {
-        m_direction = optimal_dir;
+        bool restricted = false;
+        for (unsigned iter = 0; iter < 4; iter++)
+        {
+            if (restricted_cells[iter] == m_pos)
+            {
+                restricted = true;
+                break;
+            }
+        }
+        if (!restricted)
+            m_direction = optimal_dir;
     }
     else
     {

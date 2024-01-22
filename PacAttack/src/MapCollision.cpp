@@ -1,6 +1,5 @@
 #include <math.h>
 
-#include "../headers/global.hpp"
 #include "../headers/MapCollision.hpp"
 
 bool map_collision(bool i_collect, short i_x, short i_y, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)
@@ -48,7 +47,9 @@ bool map_collision(bool i_collect, short i_x, short i_y, std::array < std::array
 			if (i_collect == 1)
 			{
 				if (i_map[x][y] == Cell::Pellet)
+				{
 					i_map[x][y] = Cell::Empty;
+				}
 			}
 			else
 			{

@@ -9,7 +9,7 @@
 #include "../headers/Ghosts.hpp"
 #include "../headers/DrawMap.hpp"
 #include "../headers/ConvertSketch.hpp"
-
+#include "../headers/GhostManager.hpp"
 
 int main()
 {
@@ -17,6 +17,18 @@ int main()
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH * SCREEN_RESIZE_FACTOR, SCREEN_HEIGHT * SCREEN_RESIZE_FACTOR), "PacAttack - Pacman Clone", sf::Style::Close);
 
     window.setView(sf::View(sf::FloatRect(0, 0, CELL_SIZE * MAP_WIDTH, FONT_HEIGHT + CELL_SIZE * MAP_HEIGHT)));
+
+    /*int HIGH_SCORE = 0;
+    sf::Font font;
+    font.loadFromFile("assets\\font\\Emulogic-zrEw.ttf");
+    sf::Text highScore;
+    highScore.setFont(font);
+    highScore.setString(std::to_string(HIGH_SCORE));
+    highScore.setCharacterSize(CELL_SIZE);
+    highScore.setFillColor(sf::Color::White);
+    highScore.setStyle(sf::Text::Bold);*/
+
+    std::array<Position, 4> init_ghost_pos;
 
     unsigned lag = 0;
     std::chrono::time_point<std::chrono::steady_clock> prev_time;
@@ -47,13 +59,11 @@ int main()
 
     // ========================= Load assets =========================
     Paccy pacman;
-    Ghosts red_ghost(GHOST::BLINKY);
-    Ghosts orange_ghost(GHOST::CLYDE);
-    Ghosts pink_ghost(GHOST::PINKY);
-    Ghosts blue_ghost(GHOST::INKY);
+    GhostManager manager;
 
-    std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > world = convert_sketch(mapSketch, pacman, red_ghost, orange_ghost, pink_ghost, blue_ghost);
+    std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > world = convert_sketch(mapSketch, pacman, init_ghost_pos);
 
+    manager.reset(init_ghost_pos);
 
     prev_time = std::chrono::steady_clock::now();
 
@@ -85,10 +95,7 @@ int main()
 
             // ========================= Update game state =========================
             pacman.update(world);
-            red_ghost.update(world, pacman, red_ghost);
-            orange_ghost.update(world, pacman, red_ghost);
-            pink_ghost.update(world, pacman, red_ghost);
-            blue_ghost.update(world, pacman, red_ghost);
+            manager.Update(world, pacman);
 
             if (FRAME_DURATION > lag)
             {
@@ -96,10 +103,7 @@ int main()
                 // ========================= Render or Draw =========================
                 Draw_Map(world, window);
                 pacman.Draw_Paccy(window);
-                red_ghost.Draw_Ghost(window);
-                orange_ghost.Draw_Ghost(window);
-                pink_ghost.Draw_Ghost(window);
-                blue_ghost.Draw_Ghost(window);
+                manager.Draw(window);
 
                 window.display();
             }

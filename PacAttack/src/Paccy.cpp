@@ -23,7 +23,6 @@ void Paccy::Draw_Paccy(sf::RenderWindow& window)
     window.draw(m_Sprite);
 }
 
-
 void Paccy::set_pos(short x, short y)
 {
     m_pos = {

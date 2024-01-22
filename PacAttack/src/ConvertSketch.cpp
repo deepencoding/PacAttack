@@ -1,6 +1,6 @@
 #include "../headers/ConvertSketch.hpp"
 
-std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT> i_Map, Paccy& pacman, Ghosts& red_ghost, Ghosts& orange_ghost, Ghosts& pink_ghost, Ghosts& blue_ghost)
+std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT> i_Map, Paccy& pacman, std::array<Position, 4> init_ghost_pos)
 {
     std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > OUT_MAP{};
     for (unsigned row = 0; row < MAP_HEIGHT; row++)
@@ -24,23 +24,27 @@ std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::ar
                 break;
 
             case 'r':
-                red_ghost.set_pos(CELL_SIZE * col, CELL_SIZE * row);
+                init_ghost_pos[GHOST::BLINKY].x = CELL_SIZE * col;
+                init_ghost_pos[GHOST::BLINKY].y = CELL_SIZE * row;
                 break;
 
             case 'p':
-                pink_ghost.set_pos(CELL_SIZE * col, CELL_SIZE * row);
+                init_ghost_pos[GHOST::PINKY].x = CELL_SIZE * col;
+                init_ghost_pos[GHOST::PINKY].y = CELL_SIZE * row;
                 break;
 
             case 'b':
-                blue_ghost.set_pos(CELL_SIZE * col, CELL_SIZE * row);
+                init_ghost_pos[GHOST::INKY].x = CELL_SIZE * col;
+                init_ghost_pos[GHOST::INKY].y = CELL_SIZE * row;
                 break;
 
             case 'o':
-                orange_ghost.set_pos(CELL_SIZE * col, CELL_SIZE * row);
+                init_ghost_pos[GHOST::CLYDE].x = CELL_SIZE * col;
+                init_ghost_pos[GHOST::CLYDE].y = CELL_SIZE * row;
                 break;
 
             case 'e':
-                // handle something
+                // handle energizers
                 OUT_MAP[col][row] = Cell::Empty;
                 std::cout << "e";
                 break;
