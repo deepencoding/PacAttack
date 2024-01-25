@@ -10,14 +10,20 @@ static constexpr unsigned char SCREEN_RESIZE_FACTOR = 2;
 static constexpr unsigned short SCREEN_WIDTH = MAP_WIDTH * CELL_SIZE;
 static constexpr unsigned short SCREEN_HEIGHT = (FONT_HEIGHT + (MAP_HEIGHT * CELL_SIZE));
 
-static constexpr unsigned short FRAME_DURATION = 16667;
-
 static constexpr unsigned char PACMAN_SPEED = 2;
-static constexpr unsigned char GHOST_SPEED = 2;
+static constexpr unsigned char GHOST_SPEED = 1;
+static constexpr unsigned char GHOST_ESCAPE_SPEED = 4;
 
 static constexpr unsigned char CLYDE_DIST = 4;
 static constexpr unsigned char PINKY_DIST = 4;
 static constexpr unsigned char INKY_DIST = 2;
+
+static constexpr unsigned short FRAME_DURATION = 16667;
+static constexpr unsigned short LONG_SCATTER_DURATION = 512;
+static constexpr unsigned short SHORT_SCATTER_DURATION = 256;
+static constexpr unsigned short ENERGIZER_DURATION = 512;
+static constexpr unsigned short GHOST_FRIGHTENED_WAIT = 512;
+
 
 enum Direction {
 	Right = 0, Up, Left, Down, Undef
@@ -29,7 +35,7 @@ static Direction get_opposite_dir(Direction dir)
 }
 
 enum class Cell {
-	Empty, Wall, Pellet
+	Empty, Wall, Pellet, Door, Energizer
 };
 
 enum GHOST {
@@ -40,10 +46,14 @@ enum MODE {
 	SCATTER = 0, CHASE
 };
 
+enum FRIGHT {
+	NONE = 0, LITTLE, FULLY
+};
+
 struct Position
 {
-	short x;
-	short y;
+	short x = 0;
+	short y = 0;
 
 	Position () {}
 

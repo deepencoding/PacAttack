@@ -40,14 +40,14 @@ Direction Paccy::get_dir() const
     return m_direction;
 }
 
-void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)
+void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, GhostManager& i_ghost_manager)
 {
     std::array<bool, 4> walls {};
 
-    walls[Direction::Right] = map_collision(0, m_pos.x + PACMAN_SPEED, m_pos.y, i_map);
-    walls[Direction::Up]    = map_collision(0, m_pos.x, m_pos.y - PACMAN_SPEED, i_map);
-    walls[Direction::Left]  = map_collision(0, m_pos.x - PACMAN_SPEED, m_pos.y, i_map);
-    walls[Direction::Down]  = map_collision(0, m_pos.x, m_pos.y + PACMAN_SPEED, i_map);
+    walls[Direction::Right] = map_collision(0, 0, m_pos.x + PACMAN_SPEED, m_pos.y, i_map);
+    walls[Direction::Up]    = map_collision(0, 0, m_pos.x, m_pos.y - PACMAN_SPEED, i_map);
+    walls[Direction::Left]  = map_collision(0, 0, m_pos.x - PACMAN_SPEED, m_pos.y, i_map);
+    walls[Direction::Down]  = map_collision(0, 0, m_pos.x, m_pos.y + PACMAN_SPEED, i_map);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D) || sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
     {
@@ -104,5 +104,28 @@ void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_
         m_pos.x = -CELL_SIZE;
     }
 
-    map_collision(1, m_pos.x, m_pos.y, i_map);
+    if (map_collision(0, 1, m_pos.x, m_pos.y, i_map))
+    {
+        energizer_timer = ENERGIZER_DURATION;
+        i_ghost_manager.switch_frightened();
+    }
+    else
+    {
+        energizer_timer = std::max(energizer_timer - 1, 0);
+        if (energizer_timer == 0)
+        {
+            i_ghost_manager.switch_frightened();
+        }
+    }
+}
+
+void Paccy::set_dead(bool i_dead)
+{
+    m_dead = i_dead;
+    std::cout << "PACMAN DEAD" << std::endl;
+}
+
+bool Paccy::get_dead() const
+{
+    return m_dead;
 }

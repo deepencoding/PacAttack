@@ -29,6 +29,18 @@ void Draw_Map(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, 
                 i_win.draw(circle_shape);
                 break;
 
+            case Cell::Door:
+                cell_shape.setFillColor(sf::Color::Magenta);
+                i_win.draw(cell_shape);
+                break;
+
+            case Cell::Energizer:
+                circle_shape.setRadius(CELL_SIZE / 4);
+                circle_shape.setOrigin(CELL_SIZE / 4, CELL_SIZE / 4);
+                circle_shape.setPosition(sf::Vector2f((CELL_SIZE * col) + (CELL_SIZE / 2), (CELL_SIZE * row) + (CELL_SIZE / 2)));
+                i_win.draw(circle_shape);
+                break;
+
             default:
                 break;
             }

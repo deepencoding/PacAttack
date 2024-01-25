@@ -1,6 +1,6 @@
 #include "../headers/ConvertSketch.hpp"
 
-std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT> i_Map, Paccy& pacman, std::array<Position, 4> init_ghost_pos)
+std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT> i_Map, Paccy& pacman, std::array<Position, 4>& init_ghost_pos)
 {
     std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > OUT_MAP{};
     for (unsigned row = 0; row < MAP_HEIGHT; row++)
@@ -11,12 +11,10 @@ std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::ar
             {
             case '#':
                 OUT_MAP[col][row] = Cell::Wall;
-                std::cout << "#";
                 break;
 
             case ' ':
                 OUT_MAP[col][row] = Cell::Empty;
-                std::cout << " ";
                 break;
 
             case 'P':
@@ -45,21 +43,22 @@ std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::ar
 
             case 'e':
                 // handle energizers
-                OUT_MAP[col][row] = Cell::Empty;
-                std::cout << "e";
+                OUT_MAP[col][row] = Cell::Energizer;
                 break;
 
             case '.':
                 // handle pellets
                 OUT_MAP[col][row] = Cell::Pellet;
-                std::cout << ".";
+                break;
+
+            case '=':
+                OUT_MAP[col][row] = Cell::Door;
                 break;
 
             default:
                 break;
             }
         }
-        std::cout << std::endl;
     }
 
     return OUT_MAP;

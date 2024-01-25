@@ -9,4 +9,4 @@
 #include "Paccy.hpp"
 #include "Ghosts.hpp"
 
-std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT>, Paccy&, std::array<Position, 4>);
+std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > convert_sketch(std::array<std::string, MAP_HEIGHT>, Paccy&, std::array<Position, 4>&);

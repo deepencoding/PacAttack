@@ -28,7 +28,13 @@ int main()
     highScore.setFillColor(sf::Color::White);
     highScore.setStyle(sf::Text::Bold);*/
 
+    unsigned char level = 1;
+
     std::array<Position, 4> init_ghost_pos;
+
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
+    float fps;
 
     unsigned lag = 0;
     std::chrono::time_point<std::chrono::steady_clock> prev_time;
@@ -63,14 +69,14 @@ int main()
 
     std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT > world = convert_sketch(mapSketch, pacman, init_ghost_pos);
 
-    manager.reset(init_ghost_pos);
+    manager.reset(level, init_ghost_pos);
 
     prev_time = std::chrono::steady_clock::now();
 
     // ========================= Main game loop =========================
     while (window.isOpen())
     {
-        unsigned dt = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - prev_time).count();
+        unsigned dt = (unsigned) std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - prev_time).count();
         lag += dt;
         prev_time += std::chrono::microseconds(dt);
 
@@ -94,11 +100,12 @@ int main()
             }
 
             // ========================= Update game state =========================
-            pacman.update(world);
-            manager.Update(world, pacman);
+            pacman.update(world, manager);
+            manager.Update(world, pacman, level);
 
             if (FRAME_DURATION > lag)
             {
+                start = std::chrono::high_resolution_clock::now();
                 window.clear();
                 // ========================= Render or Draw =========================
                 Draw_Map(world, window);
@@ -106,10 +113,10 @@ int main()
                 manager.Draw(window);
 
                 window.display();
+                end = std::chrono::high_resolution_clock::now();
+                fps = (float)1e9 / (float)std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
             }
-        }
-
-        
+        }        
     }
 
     return 0;

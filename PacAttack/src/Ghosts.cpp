@@ -5,7 +5,7 @@
 #include "../headers/Ghosts.hpp"
 
 Ghosts::Ghosts(GHOST N)
-    :m_Name(N)
+    :m_Name(N), isFrightened(FRIGHT::NONE)
 {
 }
 
@@ -55,10 +55,37 @@ Position Ghosts::get_pos() const
     return m_pos;
 }
 
+GHOST Ghosts::get_name() const
+{
+    return m_Name;
+}
+
 void Ghosts::switch_mode()
 {
-    m_mode = static_cast<MODE>((m_mode + 1) % 1);
+    //m_mode = static_cast<MODE>((m_mode + 1) % 1);
+    if (m_mode == MODE::CHASE)
+        m_mode = MODE::SCATTER;
+    else
+        m_mode = MODE::CHASE;
     m_direction = get_opposite_dir(m_direction);
+}
+
+void Ghosts::switch_frightened()
+{
+    if (isFrightened == FRIGHT::NONE)
+    {
+        isFrightened = FRIGHT::LITTLE;
+    }
+    else if (isFrightened == FRIGHT::LITTLE)
+    {
+        isFrightened = FRIGHT::NONE;
+    }
+    m_direction = get_opposite_dir(m_direction);
+}
+
+MODE Ghosts::get_mode() const
+{
+    return m_mode;
 }
 
 bool Ghosts::pacman_collision(Position i_pacman_pos) const
@@ -109,7 +136,8 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
     m_mode = MODE::SCATTER;
     use_door = (m_Name != GHOST::BLINKY);
     m_direction = Direction::Right;
-    isFrightened = 0;
+    isFrightened = FRIGHT::NONE;
+    update_timer = 0;
     m_house = i_house;
     m_gate = i_gate;
     m_target = m_gate;
@@ -117,13 +145,19 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
 
 void Ghosts::update_target(Direction i_pacman_dir, Position i_pacman_pos, Position i_red_ghost_pos)
 {
-    /*if (use_door)
+    if (use_door)
     {
-        m_target = ;
-        use_door = false;
-        return;
-    }*/
-    if (m_mode == MODE::CHASE)
+        if (m_pos == m_target)
+        {
+            if (m_target == m_gate)
+                use_door = false;
+            else if (m_target == m_house)
+            {
+                m_target = m_gate;
+            }
+        }
+    }
+    else if (m_mode == MODE::CHASE)
     {
         switch (m_Name)
         {
@@ -219,104 +253,177 @@ void Ghosts::update_target(Direction i_pacman_dir, Position i_pacman_pos, Positi
     }
 }
 
-void Ghosts::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, Paccy& i_pacman, Ghosts& red_ghost)
+void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, Paccy& i_pacman, Ghosts& red_ghost)
 {
     update_target(i_pacman.get_dir(), i_pacman.get_pos(), red_ghost.get_pos());
 
+    bool to_move = false;
+    unsigned char speed = GHOST_SPEED;
+
     std::array<bool, 4> walls{};
+    walls[Direction::Right] = map_collision(use_door, 0, m_pos.x + GHOST_SPEED, m_pos.y, i_map);
+    walls[Direction::Up]    = map_collision(use_door, 0, m_pos.x, m_pos.y - GHOST_SPEED, i_map);
+    walls[Direction::Left]  = map_collision(use_door, 0, m_pos.x - GHOST_SPEED, m_pos.y, i_map);
+    walls[Direction::Down]  = map_collision(use_door, 0, m_pos.x, m_pos.y + GHOST_SPEED, i_map);
 
-    walls[Direction::Right] = map_collision(0, m_pos.x + GHOST_SPEED, m_pos.y, i_map);
-    walls[Direction::Up]    = map_collision(0, m_pos.x, m_pos.y - GHOST_SPEED, i_map);
-    walls[Direction::Left]  = map_collision(0, m_pos.x - GHOST_SPEED, m_pos.y, i_map);
-    walls[Direction::Down]  = map_collision(0, m_pos.x, m_pos.y + GHOST_SPEED, i_map);
 
-    unsigned char available_path = 0;
-
-    Direction optimal_dir = Direction::Undef;
-
-    for (unsigned a = 0; a < 4; a++)
+    if (isFrightened == FRIGHT::LITTLE)
     {
-        if (a == static_cast<unsigned>(get_opposite_dir(m_direction)))
-            continue;
-
-        else if (!walls[a])
-        {
-            if (optimal_dir == Direction::Undef)
-                optimal_dir = static_cast<Direction>(a);
-
-            available_path++;
-
-            if (get_target_dist(static_cast<Direction>(a)) < get_target_dist(optimal_dir))
-                optimal_dir = static_cast<Direction>(a);
-            else if (get_target_dist(static_cast<Direction>(a)) == get_target_dist(optimal_dir))
-            {
-                if (static_cast<Direction>(a) == Direction::Up || optimal_dir == Direction::Up)
-                    optimal_dir = Direction::Up;
-                else if (static_cast<Direction>(a) == Direction::Left || optimal_dir == Direction::Left)
-                    optimal_dir = Direction::Left;
-                else if (static_cast<Direction>(a) == Direction::Down || optimal_dir == Direction::Down)
-                    optimal_dir = Direction::Down;
-            }
-        }
+        update_timer = GHOST_FRIGHTENED_WAIT;
     }
 
-    if (available_path > 1)
+    if (isFrightened == FRIGHT::FULLY && m_pos.x % GHOST_ESCAPE_SPEED == 0 && m_pos.y % GHOST_ESCAPE_SPEED == 0)
     {
-        bool restricted = false;
-        for (unsigned iter = 0; iter < 4; iter++)
+        speed = GHOST_ESCAPE_SPEED;
+    }
+
+    if(isFrightened != FRIGHT::LITTLE)
+    {
+        unsigned char available_path = 0;
+        to_move = true;
+        Direction optimal_dir = Direction::Undef;
+        for (unsigned a = 0; a < 4; a++)
         {
-            if (restricted_cells[iter] == m_pos)
+            if (a == static_cast<unsigned>(get_opposite_dir(m_direction)))
+                continue;
+
+            else if (!walls[a])
             {
-                restricted = true;
-                break;
+                if (optimal_dir == Direction::Undef)
+                    optimal_dir = static_cast<Direction>(a);
+
+                available_path++;
+
+                if (get_target_dist(static_cast<Direction>(a)) < get_target_dist(optimal_dir))
+                    optimal_dir = static_cast<Direction>(a);
+                else if (get_target_dist(static_cast<Direction>(a)) == get_target_dist(optimal_dir))
+                {
+                    if (static_cast<Direction>(a) == Direction::Up || optimal_dir == Direction::Up)
+                        optimal_dir = Direction::Up;
+                    else if (static_cast<Direction>(a) == Direction::Left || optimal_dir == Direction::Left)
+                        optimal_dir = Direction::Left;
+                    else if (static_cast<Direction>(a) == Direction::Down || optimal_dir == Direction::Down)
+                        optimal_dir = Direction::Down;
+                }
             }
         }
-        if (!restricted)
-            m_direction = optimal_dir;
+
+        if (available_path > 1)
+        {
+            bool restricted = false;
+            for (unsigned iter = 0; iter < 4; iter++)
+            {
+                if (restricted_cells[iter] == m_pos && m_direction != Direction::Down)
+                {
+                    restricted = true;
+                    break;
+                }
+            }
+            if (!restricted)
+                m_direction = optimal_dir;
+        }
+        else
+        {
+            if (optimal_dir == Direction::Undef)
+                m_direction = get_opposite_dir(m_direction);
+            else
+                m_direction = optimal_dir;
+        }
     }
     else
     {
-        if (optimal_dir == Direction::Undef)
-            m_direction = get_opposite_dir(m_direction);
-        else
-            m_direction = optimal_dir;
-    }
+        unsigned char available_path = 0;
+        unsigned char random_direction = rand() % 4;
 
-
-    if (!walls[m_direction])
-    {
-        switch (m_direction)
+        if (update_timer == 0)
         {
-        case Direction::Right:
-            m_pos.x += GHOST_SPEED;
-            break;
+            to_move = true;
 
-        case Direction::Up:
-            m_pos.y -= GHOST_SPEED;
-            break;
+            update_timer = GHOST_FRIGHTENED_WAIT;
 
-        case Direction::Left:
-            m_pos.x -= GHOST_SPEED;
-            break;
+            for (unsigned char a = 0; a < 4; a++)
+            {
+                //They can't turn back even if they're frightened.
+                if (a == get_opposite_dir(m_direction))
+                {
+                    continue;
+                }
+                else if (!walls[a])
+                {
+                    available_path++;
+                }
+            }
 
-        case Direction::Down:
-            m_pos.y += GHOST_SPEED;
-            break;
+            if (available_path > 0)
+            {
+                while (walls[random_direction] || random_direction == get_opposite_dir(m_direction))
+                {
+                    //We keep picking a random direction until we can use it.
+                    random_direction = rand() % 4;
+                }
 
-        default:
-            break;
+                m_direction = (Direction)random_direction;
+            }
+            else
+            {
+                //If there's no other way, it turns back.
+                m_direction = get_opposite_dir(m_direction);
+            }
+        }
+        else
+        {
+            update_timer--;
         }
     }
 
-    if (m_pos.x <= -CELL_SIZE)
+    if (to_move)
     {
-        m_pos.x = CELL_SIZE * MAP_WIDTH;
-    }
-    else if (m_pos.x >= CELL_SIZE * MAP_WIDTH)
-    {
-        m_pos.x = -CELL_SIZE;
+        if (!walls[m_direction])
+        {
+            switch (m_direction)
+            {
+            case Direction::Right:
+                m_pos.x += speed;
+                break;
+
+            case Direction::Up:
+                m_pos.y -= speed;
+                break;
+
+            case Direction::Left:
+                m_pos.x -= speed;
+                break;
+
+            case Direction::Down:
+                m_pos.y += speed;
+                break;
+
+            default:
+                break;
+            }
+        }
+
+        if (m_pos.x <= -CELL_SIZE)
+        {
+            m_pos.x = CELL_SIZE * MAP_WIDTH;
+        }
+        else if (m_pos.x >= CELL_SIZE * MAP_WIDTH)
+        {
+            m_pos.x = -CELL_SIZE;
+        }
     }
 
     if (pacman_collision(i_pacman.get_pos()))
-        std::cout << "COLLISION OCCURED" << std::endl;
+    {
+        if (FRIGHT::NONE)
+        {
+            i_pacman.set_dead(true);
+        }
+        else
+        {
+            use_door = true;
+            isFrightened = FRIGHT::FULLY;
+            m_target = m_house;
+        }
+    }
 }

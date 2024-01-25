@@ -2,7 +2,7 @@
 
 #include "../headers/MapCollision.hpp"
 
-bool map_collision(bool i_collect, short i_x, short i_y, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)
+bool map_collision(bool i_use_door, bool i_collect, short i_x, short i_y, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)
 {
 	bool op = 0;
 
@@ -44,16 +44,21 @@ bool map_collision(bool i_collect, short i_x, short i_y, std::array < std::array
 
 		if (x >= 0 && y >= 0 && x < MAP_WIDTH && y < MAP_HEIGHT)
 		{
-			if (i_collect == 1)
+			if (i_collect == true)
 			{
 				if (i_map[x][y] == Cell::Pellet)
 				{
 					i_map[x][y] = Cell::Empty;
 				}
+				else if (i_map[x][y] == Cell::Energizer)
+				{
+					op = 1;
+					i_map[x][y] = Cell::Empty;
+				}
 			}
 			else
 			{
-				if (i_map[x][y] == Cell::Wall)
+				if (i_map[x][y] == Cell::Wall || (i_map[x][y] == Cell::Door && i_use_door == false))
 					op = 1;
 			}
 		}

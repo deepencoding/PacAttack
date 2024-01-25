@@ -4,7 +4,8 @@
 #include <SFML/Graphics.hpp>
 
 #include "global.hpp"
-#include "Paccy.hpp"
+
+class Paccy;
 
 class Ghosts
 {
@@ -13,17 +14,21 @@ public:
 	void Draw_Ghost(sf::RenderWindow&);
 	void set_pos(short, short);
 	Position get_pos() const;
+	GHOST get_name() const;
 	void switch_mode();
+	void switch_frightened();
 	bool pacman_collision(Position) const;
 	float get_target_dist(Direction) const;
+	MODE get_mode() const;
 	void reset_ghost(Position, Position);
 	void update_target(Direction, Position, Position);
-	void update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, Ghosts&);
+	void update(unsigned char, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, Ghosts&);
 
 private:
 	GHOST m_Name;
 	MODE m_mode;
-	bool isFrightened;
+	FRIGHT isFrightened;
+	unsigned char update_timer;
 	bool use_door;
 
 	std::array<Position, 4> restricted_cells = {
