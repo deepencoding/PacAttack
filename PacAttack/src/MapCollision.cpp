@@ -58,7 +58,7 @@ bool map_collision(bool i_use_door, bool i_collect, short i_x, short i_y, std::a
 			}
 			else
 			{
-				if (i_map[x][y] == Cell::Wall || (i_map[x][y] == Cell::Door && i_use_door == false))
+				if (i_map[x][y] == Cell::Wall) // || (i_map[x][y] == Cell::Door && i_use_door == false))
 					op = 1;
 			}
 		}

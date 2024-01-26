@@ -5,7 +5,10 @@
 
 Paccy::Paccy()
 {
+    m_dead = false;
     m_direction = Direction::Right;
+    energized = false;
+    energizer_timer = 0;
 }
 
 void Paccy::Draw_Paccy(sf::RenderWindow& window)
@@ -40,7 +43,36 @@ Direction Paccy::get_dir() const
     return m_direction;
 }
 
-void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, GhostManager& i_ghost_manager)
+void Paccy::set_dead(bool i_dead)
+{
+    m_dead = i_dead;
+    std::cout << "PACMAN DEAD" << std::endl;
+}
+
+bool Paccy::get_dead() const
+{
+    return m_dead;
+}
+
+unsigned short Paccy::get_energizer_timer() const
+{
+    return energizer_timer;
+}
+
+bool Paccy::get_energy() const
+{
+    return energized;
+}
+
+void Paccy::reset_pacman()
+{
+    m_dead = false;
+    m_direction = Direction::Right;
+    energized = false;
+    energizer_timer = 0;
+}
+
+void Paccy::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, GhostManager& i_ghost_manager, float curr_fps)
 {
     std::array<bool, 4> walls {};
 
@@ -106,26 +138,25 @@ void Paccy::update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_
 
     if (map_collision(0, 1, m_pos.x, m_pos.y, i_map))
     {
-        energizer_timer = ENERGIZER_DURATION;
-        i_ghost_manager.switch_frightened();
+        energized = true;
+        energizer_timer = static_cast<unsigned short>(ENERGIZER_DURATION / pow(2, curr_lvl));
+        i_ghost_manager.pause_clock();
+        // i_ghost_manager.set_wave_timer(i_ghost_manager.get_wave_timer().asSeconds() + (float)(energizer_timer / curr_fps));
+        // i_ghost_manager.switch_frightened();
     }
     else
     {
-        energizer_timer = std::max(energizer_timer - 1, 0);
-        if (energizer_timer == 0)
+        // energizer_timer = std::max(0, energizer_timer - 1);
+        if (energized == true)
         {
-            i_ghost_manager.switch_frightened();
+            energizer_timer = std::max(energizer_timer - 1, 0);
+            if (energizer_timer == 0)
+            {
+                i_ghost_manager.resume_clock();
+                energized = false;
+                //i_ghost_manager.switch_frightened();
+            }
         }
     }
-}
-
-void Paccy::set_dead(bool i_dead)
-{
-    m_dead = i_dead;
-    std::cout << "PACMAN DEAD" << std::endl;
-}
-
-bool Paccy::get_dead() const
-{
-    return m_dead;
+    // std::cout << energized << std::endl;
 }

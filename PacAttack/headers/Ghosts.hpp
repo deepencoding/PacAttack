@@ -28,7 +28,7 @@ private:
 	GHOST m_Name;
 	MODE m_mode;
 	FRIGHT isFrightened;
-	unsigned char update_timer;
+	unsigned char fright_speed_timer;
 	bool use_door;
 
 	std::array<Position, 4> restricted_cells = {
@@ -41,6 +41,7 @@ private:
 	sf::Texture m_Texture;
 	sf::Sprite m_Sprite;
 
+	unsigned char speed;
 	Direction m_direction;
 	Position m_pos;
 	Position m_target;

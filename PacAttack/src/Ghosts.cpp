@@ -5,7 +5,7 @@
 #include "../headers/Ghosts.hpp"
 
 Ghosts::Ghosts(GHOST N)
-    :m_Name(N), isFrightened(FRIGHT::NONE)
+    :m_Name(N), isFrightened(FRIGHT::NONE), speed(GHOST_SPEED)
 {
 }
 
@@ -22,22 +22,28 @@ void Ghosts::Draw_Ghost(sf::RenderWindow& window)
         std::cout << "Error loading ghost texture" << std::endl;
     }
 
-    switch (m_Name)
+    if (isFrightened == FRIGHT::NONE)
     {
-    case GHOST::BLINKY:
-        m_Sprite.setColor(sf::Color::Red);
-        break;
-    case GHOST::CLYDE:
-        m_Sprite.setColor(sf::Color::Color (255, 182, 85, 255));
-        break;
-    case GHOST::PINKY:
-        m_Sprite.setColor(sf::Color::Color (255, 182, 255, 255));
-        break;
-    case GHOST::INKY:
-        m_Sprite.setColor(sf::Color::Cyan);
-        break;
-    default:
-        break;
+        switch (m_Name)
+        {
+        case GHOST::BLINKY:
+            m_Sprite.setColor(sf::Color::Red);
+            break;
+        case GHOST::CLYDE:
+            m_Sprite.setColor(sf::Color::Color(255, 182, 85, 255));
+            break;
+        case GHOST::PINKY:
+            m_Sprite.setColor(sf::Color::Color(255, 182, 255, 255));
+            break;
+        case GHOST::INKY:
+            m_Sprite.setColor(sf::Color::Cyan);
+            break;
+        default:
+            break;
+        }
+    }
+    else {
+        m_Sprite.setColor(sf::Color::Color(36, 36, 255, 255));
     }
 
     window.draw(m_Sprite);
@@ -62,11 +68,15 @@ GHOST Ghosts::get_name() const
 
 void Ghosts::switch_mode()
 {
-    //m_mode = static_cast<MODE>((m_mode + 1) % 1);
+    // m_mode = static_cast<MODE>(((unsigned)m_mode + 1) % 1);
     if (m_mode == MODE::CHASE)
+    {
         m_mode = MODE::SCATTER;
+    }
     else
+    {
         m_mode = MODE::CHASE;
+    }
     m_direction = get_opposite_dir(m_direction);
 }
 
@@ -137,7 +147,7 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
     use_door = (m_Name != GHOST::BLINKY);
     m_direction = Direction::Right;
     isFrightened = FRIGHT::NONE;
-    update_timer = 0;
+    fright_speed_timer = 0;
     m_house = i_house;
     m_gate = i_gate;
     m_target = m_gate;
@@ -150,105 +160,112 @@ void Ghosts::update_target(Direction i_pacman_dir, Position i_pacman_pos, Positi
         if (m_pos == m_target)
         {
             if (m_target == m_gate)
+            {
                 use_door = false;
+                // speed = GHOST_SPEED;
+            }
             else if (m_target == m_house)
             {
+                isFrightened = FRIGHT::NONE;
                 m_target = m_gate;
             }
         }
     }
-    else if (m_mode == MODE::CHASE)
+    else 
     {
-        switch (m_Name)
+        if (m_mode == MODE::CHASE)
         {
-        case GHOST::BLINKY:
-            m_target = i_pacman_pos;
-            break;
-        case GHOST::CLYDE:
-            if (sqrt(pow(i_pacman_pos.x - m_pos.x, 2) + pow(i_pacman_pos.y - m_pos.y, 2))
-                <= CELL_SIZE * CLYDE_DIST)
+            switch (m_Name)
             {
-                m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
-            }
-            else
-            {
+            case GHOST::BLINKY:
                 m_target = i_pacman_pos;
-            }
-            break;
-        case GHOST::PINKY:
-            m_target = i_pacman_pos;
-            switch (i_pacman_dir)
-            {
-            case Direction::Right:
-                m_target.x += PINKY_DIST * CELL_SIZE;
                 break;
-
-            case Direction::Up:
-                m_target.y -= PINKY_DIST * CELL_SIZE;
+            case GHOST::CLYDE:
+                if (sqrt(pow(i_pacman_pos.x - m_pos.x, 2) + pow(i_pacman_pos.y - m_pos.y, 2))
+                    <= CELL_SIZE * CLYDE_DIST)
+                {
+                    m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
+                }
+                else
+                {
+                    m_target = i_pacman_pos;
+                }
                 break;
+            case GHOST::PINKY:
+                m_target = i_pacman_pos;
+                switch (i_pacman_dir)
+                {
+                case Direction::Right:
+                    m_target.x += PINKY_DIST * CELL_SIZE;
+                    break;
 
-            case Direction::Left:
-                m_target.x -= PINKY_DIST * CELL_SIZE;
+                case Direction::Up:
+                    m_target.y -= PINKY_DIST * CELL_SIZE;
+                    break;
+
+                case Direction::Left:
+                    m_target.x -= PINKY_DIST * CELL_SIZE;
+                    break;
+
+                case Direction::Down:
+                    m_target.y += PINKY_DIST * CELL_SIZE;
+                    break;
+
+                default:
+                    break;
+                }
                 break;
+            case GHOST::INKY:
+                m_target = i_pacman_pos;
+                switch (i_pacman_dir)
+                {
+                case Direction::Right:
+                    m_target.x += INKY_DIST * CELL_SIZE;
+                    break;
 
-            case Direction::Down:
-                m_target.y += PINKY_DIST * CELL_SIZE;
+                case Direction::Up:
+                    m_target.y -= INKY_DIST * CELL_SIZE;
+                    break;
+
+                case Direction::Left:
+                    m_target.x -= INKY_DIST * CELL_SIZE;
+                    break;
+
+                case Direction::Down:
+                    m_target.y += INKY_DIST * CELL_SIZE;
+                    break;
+
+                default:
+                    break;
+                }
+
+                m_target.x = (2 * m_target.x) - i_red_ghost_pos.x;
+                m_target.y = (2 * m_target.y) - i_red_ghost_pos.y;
+
                 break;
-
             default:
                 break;
             }
-            break;
-        case GHOST::INKY:
-            m_target = i_pacman_pos;
-            switch (i_pacman_dir)
-            {
-            case Direction::Right:
-                m_target.x += INKY_DIST * CELL_SIZE;
-                break;
-
-            case Direction::Up:
-                m_target.y -= INKY_DIST * CELL_SIZE;
-                break;
-
-            case Direction::Left:
-                m_target.x -= INKY_DIST * CELL_SIZE;
-                break;
-
-            case Direction::Down:
-                m_target.y += INKY_DIST * CELL_SIZE;
-                break;
-
-            default:
-                break;
-            }
-
-            m_target.x = (2 * m_target.x) - i_red_ghost_pos.x;
-            m_target.y = (2 * m_target.y) - i_red_ghost_pos.y;
-
-            break;
-        default:
-            break;
         }
-    }
-    else // SCATTER MODE
-    {
-        switch (m_Name)
+        else // SCATTER MODE
         {
-        case GHOST::BLINKY:
-            m_target = { SCREEN_WIDTH - CELL_SIZE , 0 };
-            break;
-        case GHOST::CLYDE:
-            m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
-            break;
-        case GHOST::PINKY:
-            m_target = { 0 , 0 };
-            break;
-        case GHOST::INKY:
-            m_target = { SCREEN_WIDTH - CELL_SIZE , SCREEN_HEIGHT - CELL_SIZE };
-            break;
-        default:
-            break;
+            switch (m_Name)
+            {
+            case GHOST::BLINKY:
+                m_target = { SCREEN_WIDTH - CELL_SIZE , 0 };
+                break;
+            case GHOST::CLYDE:
+                m_target = { 0 , SCREEN_HEIGHT - CELL_SIZE };
+                break;
+            case GHOST::PINKY:
+                m_target = { 0 , 0 };
+                break;
+            case GHOST::INKY:
+                m_target = { SCREEN_WIDTH - CELL_SIZE , SCREEN_HEIGHT - CELL_SIZE };
+                break;
+            default:
+                break;
+            }
         }
     }
 }
@@ -257,8 +274,15 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
 {
     update_target(i_pacman.get_dir(), i_pacman.get_pos(), red_ghost.get_pos());
 
+    //if (m_Name == GHOST::BLINKY)
+    //{
+    //    std::cout << isFrightened << std::endl;
+    //    std::cout << "X= " << m_target.x << "Y= " << m_target.y << std::endl;
+    //    std::cout << m_mode << std::endl;
+    //}
+
     bool to_move = false;
-    unsigned char speed = GHOST_SPEED;
+    speed = GHOST_SPEED;
 
     std::array<bool, 4> walls{};
     walls[Direction::Right] = map_collision(use_door, 0, m_pos.x + GHOST_SPEED, m_pos.y, i_map);
@@ -267,9 +291,16 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     walls[Direction::Down]  = map_collision(use_door, 0, m_pos.x, m_pos.y + GHOST_SPEED, i_map);
 
 
-    if (isFrightened == FRIGHT::LITTLE)
+    if (isFrightened == FRIGHT::NONE && i_pacman.get_energy())
     {
-        update_timer = GHOST_FRIGHTENED_WAIT;
+        isFrightened = FRIGHT::LITTLE;
+        fright_speed_timer = GHOST_FRIGHTENED_WAIT;
+        m_direction = get_opposite_dir(m_direction);
+    }
+    else if (i_pacman.get_energy() == false && isFrightened == FRIGHT::LITTLE)
+    {
+        isFrightened = FRIGHT::NONE;
+        m_direction = get_opposite_dir(m_direction);
     }
 
     if (isFrightened == FRIGHT::FULLY && m_pos.x % GHOST_ESCAPE_SPEED == 0 && m_pos.y % GHOST_ESCAPE_SPEED == 0)
@@ -277,11 +308,12 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
         speed = GHOST_ESCAPE_SPEED;
     }
 
-    if(isFrightened != FRIGHT::LITTLE)
+    unsigned char available_path = 0;
+    if (isFrightened != FRIGHT::LITTLE)
     {
-        unsigned char available_path = 0;
         to_move = true;
         Direction optimal_dir = Direction::Undef;
+
         for (unsigned a = 0; a < 4; a++)
         {
             if (a == static_cast<unsigned>(get_opposite_dir(m_direction)))
@@ -290,12 +322,16 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
             else if (!walls[a])
             {
                 if (optimal_dir == Direction::Undef)
+                {
                     optimal_dir = static_cast<Direction>(a);
+                }
 
                 available_path++;
 
                 if (get_target_dist(static_cast<Direction>(a)) < get_target_dist(optimal_dir))
+                {
                     optimal_dir = static_cast<Direction>(a);
+                }
                 else if (get_target_dist(static_cast<Direction>(a)) == get_target_dist(optimal_dir))
                 {
                     if (static_cast<Direction>(a) == Direction::Up || optimal_dir == Direction::Up)
@@ -332,19 +368,69 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     }
     else
     {
-        unsigned char available_path = 0;
-        unsigned char random_direction = rand() % 4;
-
-        if (update_timer == 0)
+        // RANDOM DIRECTIONS WHEN RUNNING AWAY
+        if (fright_speed_timer == 0)
         {
             to_move = true;
 
-            update_timer = GHOST_FRIGHTENED_WAIT;
+            fright_speed_timer = GHOST_FRIGHTENED_WAIT;
+
+            unsigned char available_path = 0;
+
+            for (unsigned a = 0; a < 4; a++)
+            {
+                if (a == static_cast<unsigned>(get_opposite_dir(m_direction)))
+                    continue;
+
+                else if (!walls[a])
+                {
+                    available_path++;
+                }
+            }
+
+            if (available_path > 1)
+            {
+                Direction new_direction = static_cast<Direction>(rand() % 4); // randomness
+
+                if (!walls[new_direction] && new_direction != get_opposite_dir(m_direction))
+                {
+                    m_direction = new_direction;
+                }
+            }
+            else if (walls[m_direction])
+            {
+                for (unsigned a = 0; a < 4; a++)
+                {
+                    if (!walls[a] && a != static_cast<unsigned>(get_opposite_dir(m_direction)))
+                    {
+                        m_direction = static_cast<Direction>(a);
+                        break;
+                    }
+
+                }
+
+            }
+        }
+        else 
+        {
+            fright_speed_timer--;
+        }
+    }
+
+        // =================================================================================================
+        /*unsigned char available_path = 0;
+        Direction random_direction = (Direction)(rand() % 4);
+
+        if (fright_speed_timer == 0)
+        {
+            to_move = true;
+
+            fright_speed_timer = GHOST_FRIGHTENED_WAIT;
 
             for (unsigned char a = 0; a < 4; a++)
             {
                 //They can't turn back even if they're frightened.
-                if (a == get_opposite_dir(m_direction))
+                if (a == (unsigned char) get_opposite_dir(m_direction))
                 {
                     continue;
                 }
@@ -356,7 +442,7 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
 
             if (available_path > 0)
             {
-                while (walls[random_direction] || random_direction == get_opposite_dir(m_direction))
+                while (walls[random_direction] || random_direction == () get_opposite_dir(m_direction))
                 {
                     //We keep picking a random direction until we can use it.
                     random_direction = rand() % 4;
@@ -372,10 +458,13 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
         }
         else
         {
-            update_timer--;
-        }
-    }
+            fright_speed_timer--;
+        }*/
+        // =========================================================================================
 
+    // std::cout << to_move << std::endl;
+    /*if (m_Name == GHOST::BLINKY)
+        std::cout << m_direction << std::endl;*/
     if (to_move)
     {
         if (!walls[m_direction])
@@ -415,11 +504,11 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
 
     if (pacman_collision(i_pacman.get_pos()))
     {
-        if (FRIGHT::NONE)
+        if (isFrightened == FRIGHT::NONE)
         {
             i_pacman.set_dead(true);
         }
-        else
+        else if (isFrightened == FRIGHT::LITTLE)
         {
             use_door = true;
             isFrightened = FRIGHT::FULLY;

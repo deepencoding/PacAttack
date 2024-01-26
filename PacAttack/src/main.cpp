@@ -34,7 +34,7 @@ int main()
 
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
-    float fps;
+    float fps = 240.f;
 
     unsigned lag = 0;
     std::chrono::time_point<std::chrono::steady_clock> prev_time;
@@ -100,7 +100,7 @@ int main()
             }
 
             // ========================= Update game state =========================
-            pacman.update(world, manager);
+            pacman.update(level, world, manager, fps);
             manager.Update(world, pacman, level);
 
             if (FRAME_DURATION > lag)
