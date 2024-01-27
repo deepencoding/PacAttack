@@ -22,8 +22,12 @@ void Ghosts::Draw_Ghost(sf::RenderWindow& window)
         std::cout << "Error loading ghost texture" << std::endl;
     }
 
-    if (isFrightened == FRIGHT::NONE)
+    if (isFrightened == FRIGHT::LITTLE)
     {
+        m_Sprite.setColor(sf::Color::Color(36, 36, 255, 255));
+        
+    }
+    else {
         switch (m_Name)
         {
         case GHOST::BLINKY:
@@ -41,9 +45,6 @@ void Ghosts::Draw_Ghost(sf::RenderWindow& window)
         default:
             break;
         }
-    }
-    else {
-        m_Sprite.setColor(sf::Color::Color(36, 36, 255, 255));
     }
 
     window.draw(m_Sprite);
@@ -290,14 +291,14 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     walls[Direction::Left]  = map_collision(use_door, 0, m_pos.x - GHOST_SPEED, m_pos.y, i_map);
     walls[Direction::Down]  = map_collision(use_door, 0, m_pos.x, m_pos.y + GHOST_SPEED, i_map);
 
-
-    if (isFrightened == FRIGHT::NONE && i_pacman.get_energy())
+    // to make the ghost little fightened or not
+    if (isFrightened == FRIGHT::NONE && i_pacman.get_energizer_timer() == static_cast<unsigned short>(ENERGIZER_DURATION/pow(2, curr_lvl)))
     {
         isFrightened = FRIGHT::LITTLE;
         fright_speed_timer = GHOST_FRIGHTENED_WAIT;
         m_direction = get_opposite_dir(m_direction);
     }
-    else if (i_pacman.get_energy() == false && isFrightened == FRIGHT::LITTLE)
+    else if (i_pacman.get_energizer_timer() == 0 && isFrightened == FRIGHT::LITTLE)
     {
         isFrightened = FRIGHT::NONE;
         m_direction = get_opposite_dir(m_direction);
@@ -508,7 +509,7 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
         {
             i_pacman.set_dead(true);
         }
-        else if (isFrightened == FRIGHT::LITTLE)
+        else
         {
             use_door = true;
             isFrightened = FRIGHT::FULLY;

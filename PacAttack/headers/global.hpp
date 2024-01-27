@@ -14,6 +14,9 @@ static constexpr unsigned char PACMAN_SPEED = 2;
 static constexpr unsigned char GHOST_SPEED = 1;
 static constexpr unsigned char GHOST_ESCAPE_SPEED = 4;
 
+// v This is the amount of times ghosts wait before moving each frame v
+static constexpr unsigned char GHOST_FRIGHTENED_SPEED = 3;
+
 static constexpr unsigned char CLYDE_DIST = 4;
 static constexpr unsigned char PINKY_DIST = 4;
 static constexpr unsigned char INKY_DIST = 2;
