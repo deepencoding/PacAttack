@@ -28,7 +28,8 @@ private:
 	GHOST m_Name;
 	MODE m_mode;
 	FRIGHT isFrightened;
-	unsigned char fright_speed_timer;
+	int fright_speed_timer;
+	int tunnel_speed_timer;
 	bool use_door;
 
 	std::array<Position, 4> restricted_cells = {

@@ -11,7 +11,7 @@ class Paccy
 {
 public:
 	Paccy();
-	void Draw_Paccy(sf::RenderWindow&);
+	void Draw_Paccy(bool, sf::RenderWindow&);
 	void set_pos(short, short);
 	Position get_pos() const;
 	Direction get_dir() const;

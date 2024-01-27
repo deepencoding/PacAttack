@@ -149,6 +149,7 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
     m_direction = Direction::Right;
     isFrightened = FRIGHT::NONE;
     fright_speed_timer = 0;
+    tunnel_speed_timer = 0;
     m_house = i_house;
     m_gate = i_gate;
     m_target = m_gate;
@@ -295,7 +296,7 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     if (isFrightened == FRIGHT::NONE && i_pacman.get_energizer_timer() == static_cast<unsigned short>(ENERGIZER_DURATION/pow(2, curr_lvl)))
     {
         isFrightened = FRIGHT::LITTLE;
-        fright_speed_timer = GHOST_FRIGHTENED_WAIT;
+        fright_speed_timer = GHOST_FRIGHTENED_SPEED;
         m_direction = get_opposite_dir(m_direction);
     }
     else if (i_pacman.get_energizer_timer() == 0 && isFrightened == FRIGHT::LITTLE)
@@ -374,7 +375,7 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
         {
             to_move = true;
 
-            fright_speed_timer = GHOST_FRIGHTENED_WAIT;
+            fright_speed_timer = GHOST_FRIGHTENED_SPEED;
 
             unsigned char available_path = 0;
 
@@ -463,9 +464,23 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
         }*/
         // =========================================================================================
 
-    // std::cout << to_move << std::endl;
-    /*if (m_Name == GHOST::BLINKY)
-        std::cout << m_direction << std::endl;*/
+    //std::cout << fright_speed_timer << std::endl;
+    ///*if (m_Name == GHOST::BLINKY)
+    //    std::cout << m_direction << std::endl;*/
+    //tunnel_speed_timer = std::max(tunnel_speed_timer - 1, 0);
+    //if (tunnel_speed_timer == 0)
+    //{
+    //    to_move = true;
+    //}
+    //if (m_pos.x <= CELL_SIZE && m_pos.y == CELL_SIZE * 9)
+    //{
+    //    tunnel_speed_timer = GHOST_TUNNEL_SPEED;
+    //}
+    //else if (m_pos.x >= CELL_SIZE * (MAP_WIDTH - 2) && m_pos.y == CELL_SIZE * 9)
+    //{
+    //    tunnel_speed_timer = GHOST_TUNNEL_SPEED;
+    //}
+
     if (to_move)
     {
         if (!walls[m_direction])

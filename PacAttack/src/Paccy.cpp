@@ -11,7 +11,7 @@ Paccy::Paccy()
     energizer_timer = 0;
 }
 
-void Paccy::Draw_Paccy(sf::RenderWindow& window)
+void Paccy::Draw_Paccy(bool i_game_won, sf::RenderWindow& window)
 {
     m_Sprite.setPosition(m_pos.x, m_pos.y);
     if (m_Texture.loadFromFile("assets\\images\\Pacman16.png"))
@@ -23,6 +23,18 @@ void Paccy::Draw_Paccy(sf::RenderWindow& window)
     {
         std::cout << "Error loading pacman texture" << std::endl;
     }
+
+    m_Sprite.setColor(sf::Color::Yellow);
+
+    if (get_dead())
+    {
+        m_Sprite.setColor(sf::Color::Red);
+    }
+    else if (i_game_won)
+    {
+        m_Sprite.setColor(sf::Color::Green);
+    }
+
     window.draw(m_Sprite);
 }
 

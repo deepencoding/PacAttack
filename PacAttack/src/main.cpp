@@ -28,6 +28,7 @@ int main()
     highScore.setFillColor(sf::Color::White);
     highScore.setStyle(sf::Text::Bold);*/
 
+    bool game_won = false;
     unsigned char level = 1;
 
     std::array<Position, 4> init_ghost_pos;
@@ -100,17 +101,53 @@ int main()
             }
 
             // ========================= Update game state =========================
-            pacman.update(level, world, manager, fps);
-            manager.Update(world, pacman, level);
+            if (!pacman.get_dead() && game_won == false)
+            {
+                game_won = true;
+                pacman.update(level, world, manager, fps);
+                manager.Update(world, pacman, level);
+                for (std::array < Cell, MAP_WIDTH >& row : world)
+                {
+                    for (Cell& cell : row)
+                    {
+                        if (cell == Cell::Pellet) // if there are still pellets left, game is not won
+                        {
+                            game_won = false;
+                            break;
+                        }
+                    }
+                    if (game_won == false) {
+                        break;
+                    }
+                }
+            }
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            {
+                game_won = 0;
+                if (pacman.get_dead())
+                {
+                    level = 1;
+                }
+                else {
+                    level++;
+                }
+                world = convert_sketch(mapSketch, pacman, init_ghost_pos);
+                manager.reset(level, init_ghost_pos);
+                pacman.reset_pacman();
+
+            }
 
             if (FRAME_DURATION > lag)
             {
                 start = std::chrono::high_resolution_clock::now();
                 window.clear();
                 // ========================= Render or Draw =========================
-                Draw_Map(world, window);
-                pacman.Draw_Paccy(window);
-                manager.Draw(window);
+                if (!pacman.get_dead() && game_won == false)
+                {
+                    Draw_Map(world, window);
+                    manager.Draw(window);
+                }
+                pacman.Draw_Paccy(game_won, window);
 
                 window.display();
                 end = std::chrono::high_resolution_clock::now();
