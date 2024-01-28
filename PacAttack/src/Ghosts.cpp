@@ -120,6 +120,11 @@ MODE Ghosts::get_mode() const
     return m_mode;
 }
 
+FRIGHT Ghosts::get_frightened() const
+{
+    return isFrightened;
+}
+
 bool Ghosts::pacman_collision(Position i_pacman_pos) const
 {
     if (m_pos.x > i_pacman_pos.x - (CELL_SIZE / 2)
@@ -170,7 +175,6 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
     m_direction = Direction::Right;
     isFrightened = FRIGHT::NONE;
     fright_speed_timer = 0;
-    tunnel_speed_timer = 0;
     m_house = i_house;
     m_gate = i_gate;
     m_target = m_gate;
@@ -488,7 +492,8 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     //std::cout << fright_speed_timer << std::endl;
     ///*if (m_Name == GHOST::BLINKY)
     //    std::cout << m_direction << std::endl;*/
-    //tunnel_speed_timer = std::max(tunnel_speed_timer - 1, 0);
+    //
+    //  = std::max(tunnel_speed_timer - 1, 0);
     //if (tunnel_speed_timer == 0)
     //{
     //    to_move = true;

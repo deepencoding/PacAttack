@@ -235,6 +235,16 @@ sf::Time GhostManager::get_wave_timer() const
     return wave_timer;
 }
 
+std::array<FRIGHT, 4> GhostManager::get_ghost_frightened() const
+{
+    std::array<FRIGHT, 4> op{};
+    for (unsigned iter = 0; iter < 4; iter++)
+    {
+        op[iter] = m_ghostArr[iter].get_frightened();
+    }
+    return op;
+}
+
 void GhostManager::pause_clock()
 {
     ghost_clock.pause();

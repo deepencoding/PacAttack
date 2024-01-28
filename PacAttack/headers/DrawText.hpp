@@ -3,4 +3,6 @@
 #include <string>
 #include <SFML/Graphics.hpp>
 
-void DrawText(const std::string&, sf::RenderWindow&, bool, short = 0, short = 0);
+#include "global.hpp"
+
+void DrawText(const std::string&, sf::RenderWindow&, bool, float = 0, float = 0, unsigned int = CELL_SIZE);

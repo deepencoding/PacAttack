@@ -4,17 +4,15 @@
 #include "../headers/global.hpp"
 
 
-void DrawText(const std::string& i_text, sf::RenderWindow& i_win, bool i_center, short i_x, short i_y)
+void DrawText(const std::string& i_text, sf::RenderWindow& i_win, bool i_center, float i_x, float i_y, unsigned int i_size)
 {
-    int HIGH_SCORE = 0;
-
     sf::Text text;
     sf::Font font;
     font.loadFromFile("assets\\font\\Emulogic-zrEw.ttf");
 
     text.setFont(font);
     text.setString(sf::String(i_text));
-    text.setCharacterSize(CELL_SIZE);
+    text.setCharacterSize(i_size);
     text.setFillColor(sf::Color::White);
     text.setStyle(sf::Text::Bold);
 

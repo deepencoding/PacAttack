@@ -20,6 +20,7 @@ public:
 	bool pacman_collision(Position) const;
 	float get_target_dist(Direction) const;
 	MODE get_mode() const;
+	FRIGHT get_frightened() const;
 	void reset_ghost(Position, Position);
 	void update_target(Direction, Position, Position);
 	void update(unsigned char, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, Ghosts&);
@@ -29,7 +30,6 @@ private:
 	MODE m_mode;
 	FRIGHT isFrightened;
 	int fright_speed_timer;
-	int tunnel_speed_timer;
 	int animation_timer;
 	bool use_door;
 

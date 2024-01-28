@@ -18,6 +18,7 @@ public:
 	MODE get_ghost_mode();
 	void switch_frightened();
 	sf::Time get_wave_timer() const;
+	std::array<FRIGHT, 4> get_ghost_frightened() const;
 	void pause_clock();
 	void resume_clock();
 private:
