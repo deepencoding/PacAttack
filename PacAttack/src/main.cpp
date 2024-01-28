@@ -10,25 +10,21 @@
 #include "../headers/DrawMap.hpp"
 #include "../headers/ConvertSketch.hpp"
 #include "../headers/GhostManager.hpp"
+#include "../headers/DrawText.hpp"
 
 int main()
 {
     // ========================= Initialize game =========================
-    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH * SCREEN_RESIZE_FACTOR, SCREEN_HEIGHT * SCREEN_RESIZE_FACTOR), "PacAttack - Pacman Clone", sf::Style::Close);
+    sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH * SCREEN_RESIZE_FACTOR, (SCREEN_HEIGHT + CELL_SIZE) * SCREEN_RESIZE_FACTOR), "PacAttack - Pacman Clone", sf::Style::Close);
 
-    window.setView(sf::View(sf::FloatRect(0, 0, CELL_SIZE * MAP_WIDTH, FONT_HEIGHT + CELL_SIZE * MAP_HEIGHT)));
+    window.setView(sf::View(sf::FloatRect(0, -CELL_SIZE, CELL_SIZE * MAP_WIDTH, FONT_HEIGHT + (CELL_SIZE + 1) * MAP_HEIGHT)));
 
-    /*int HIGH_SCORE = 0;
-    sf::Font font;
-    font.loadFromFile("assets\\font\\Emulogic-zrEw.ttf");
-    sf::Text highScore;
-    highScore.setFont(font);
-    highScore.setString(std::to_string(HIGH_SCORE));
-    highScore.setCharacterSize(CELL_SIZE);
-    highScore.setFillColor(sf::Color::White);
-    highScore.setStyle(sf::Text::Bold);*/
+    /*sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH * SCREEN_RESIZE_FACTOR, SCREEN_HEIGHT * SCREEN_RESIZE_FACTOR), "PacAttack - Pacman Clone", sf::Style::Close);
+
+    window.setView(sf::View(sf::FloatRect(0, 0, CELL_SIZE * MAP_WIDTH, FONT_HEIGHT + CELL_SIZE * MAP_HEIGHT)));*/
 
     bool game_won = false;
+    bool gameNotStarted = true;
     unsigned char level = 1;
 
     std::array<Position, 4> init_ghost_pos;
@@ -80,6 +76,12 @@ int main()
         unsigned dt = (unsigned) std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - prev_time).count();
         lag += dt;
         prev_time += std::chrono::microseconds(dt);
+        if (gameNotStarted)
+        {
+            if ((sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) && gameNotStarted) {
+                gameNotStarted = false;
+            }
+        }
 
         sf::Event event;
         while (FRAME_DURATION <= lag)
@@ -101,11 +103,13 @@ int main()
             }
 
             // ========================= Update game state =========================
-            if (!pacman.get_dead() && game_won == false)
+            if (!pacman.get_dead() && game_won == false && gameNotStarted == false)
             {
                 game_won = true;
+                
                 pacman.update(level, world, manager, fps);
                 manager.Update(world, pacman, level);
+                
                 for (std::array < Cell, MAP_WIDTH >& row : world)
                 {
                     for (Cell& cell : row)
@@ -121,7 +125,7 @@ int main()
                     }
                 }
             }
-            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+            else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
                 game_won = 0;
                 if (pacman.get_dead())
@@ -145,9 +149,27 @@ int main()
                 if (!pacman.get_dead() && game_won == false)
                 {
                     Draw_Map(world, window);
-                    manager.Draw(window);
+                    manager.Draw(pacman.get_energizer_timer() <= GHOST_FLASH_TIME, window);
                 }
-                pacman.Draw_Paccy(game_won, window);
+                pacman.Draw_Paccy(game_won, window, world);
+                DrawText("Level: " + std::to_string(level), window, false, 0, MAP_HEIGHT);
+
+                if (pacman.get_animation_over())
+                {
+                    if (game_won)
+                    {
+                        DrawText("GameWon", window, true);
+                    }
+                    else
+                    {
+                        DrawText("GameOver", window, true);
+                    }
+                }
+
+                if (gameNotStarted)
+                {
+                    DrawText("Enter or Space", window, true, true);
+                }
 
                 window.display();
                 end = std::chrono::high_resolution_clock::now();

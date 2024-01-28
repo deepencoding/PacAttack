@@ -11,7 +11,7 @@ class Paccy
 {
 public:
 	Paccy();
-	void Draw_Paccy(bool, sf::RenderWindow&);
+	void Draw_Paccy(bool, sf::RenderWindow&, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&);
 	void set_pos(short, short);
 	Position get_pos() const;
 	Direction get_dir() const;
@@ -21,6 +21,7 @@ public:
 	bool get_energy() const;
 	void reset_pacman();
 	unsigned short get_energizer_timer() const;
+	bool get_animation_over() const;
 
 private:
 	sf::Texture m_Texture;
@@ -30,11 +31,11 @@ private:
 
 	Direction m_direction;
 	Position m_pos;
-	unsigned short energizer_timer;
-	bool energized;
 
-	int m_XIndex = 0;
-	int m_YIndex = 0;
-	int m_TextureBit = 16;
+	unsigned short energizer_timer;
+	unsigned short animation_timer;
+	bool m_animation_over;
+
+	bool energized;
 };
 

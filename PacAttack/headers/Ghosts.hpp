@@ -11,7 +11,7 @@ class Ghosts
 {
 public:
 	Ghosts(GHOST);
-	void Draw_Ghost(sf::RenderWindow&);
+	void Draw_Ghost(bool, sf::RenderWindow&);
 	void set_pos(short, short);
 	Position get_pos() const;
 	GHOST get_name() const;
@@ -30,6 +30,7 @@ private:
 	FRIGHT isFrightened;
 	int fright_speed_timer;
 	int tunnel_speed_timer;
+	int animation_timer;
 	bool use_door;
 
 	std::array<Position, 4> restricted_cells = {
@@ -40,7 +41,8 @@ private:
 		};
 
 	sf::Texture m_Texture;
-	sf::Sprite m_Sprite;
+	sf::Sprite m_bodySprite;
+	sf::Sprite m_faceSprite;
 
 	unsigned char speed;
 	Direction m_direction;
@@ -48,9 +50,5 @@ private:
 	Position m_target;
 	Position m_house;
 	Position m_gate;
-
-	int m_XIndex = 0;
-	int m_YIndex = 0;
-	int m_TextureBit = 16;
 };
 

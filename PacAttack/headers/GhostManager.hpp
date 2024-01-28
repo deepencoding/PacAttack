@@ -11,7 +11,7 @@ class GhostManager
 {
 public:
 	GhostManager();
-	void Draw(sf::RenderWindow&);
+	void Draw(bool, sf::RenderWindow&);
 	void reset(unsigned char, std::array<Position, 4>);
 	void Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, unsigned char);
 	void switch_ghost_mode();

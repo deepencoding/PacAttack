@@ -12,11 +12,11 @@ GhostManager::GhostManager()
     ghost_clock.resume();
 }
 
-void GhostManager::Draw(sf::RenderWindow& i_win)
+void GhostManager::Draw(bool i_flash, sf::RenderWindow& i_win)
 {
     for (Ghosts& ghost : m_ghostArr)
     {
-        ghost.Draw_Ghost(i_win);
+        ghost.Draw_Ghost(i_flash, i_win);
     }
 }
 

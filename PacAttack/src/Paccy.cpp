@@ -9,33 +9,48 @@ Paccy::Paccy()
     m_direction = Direction::Right;
     energized = false;
     energizer_timer = 0;
+    m_animation_over = false;
 }
 
-void Paccy::Draw_Paccy(bool i_game_won, sf::RenderWindow& window)
+void Paccy::Draw_Paccy(bool i_game_won, sf::RenderWindow& window, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)
 {
+    unsigned char frame = static_cast<unsigned char>(floor(animation_timer / (unsigned short)PACMAN_ANIMATION_SPEED));
+
     m_Sprite.setPosition(m_pos.x, m_pos.y);
-    if (m_Texture.loadFromFile("assets\\images\\Pacman16.png"))
+
+    if (m_dead || i_game_won)
     {
-        m_Sprite.setTexture(m_Texture);
-        m_Sprite.setTextureRect(sf::IntRect(m_XIndex * m_TextureBit, m_YIndex * m_TextureBit, m_TextureBit, m_TextureBit));
+        if (animation_timer < PACMAN_ANIMATION_SPEED * PACMAN_DEATH_FRAMES)
+        {
+            animation_timer++;
+            m_Texture.loadFromFile("assets\\images\\PacmanDeath16.png");
+            m_Sprite.setTexture(m_Texture);
+            m_Sprite.setTextureRect(sf::IntRect(frame * TEXTURE_BIT, 0, TEXTURE_BIT, TEXTURE_BIT));
+            window.draw(m_Sprite);
+        }
+        else
+        {
+            m_animation_over = true;
+        }
     }
     else
     {
-        std::cout << "Error loading pacman texture" << std::endl;
-    }
+        m_Texture.loadFromFile("assets\\images\\Pacman16.png");
+        m_Sprite.setTexture(m_Texture);
+        m_Sprite.setTextureRect(sf::IntRect(frame * TEXTURE_BIT, m_direction * TEXTURE_BIT, TEXTURE_BIT, TEXTURE_BIT));
+        window.draw(m_Sprite);
+        std::array<bool, 4> walls{};
 
-    m_Sprite.setColor(sf::Color::Yellow);
+        walls[Direction::Right] = map_collision(0, 0, m_pos.x + PACMAN_SPEED, m_pos.y, i_map);
+        walls[Direction::Up] = map_collision(0, 0, m_pos.x, m_pos.y - PACMAN_SPEED, i_map);
+        walls[Direction::Left] = map_collision(0, 0, m_pos.x - PACMAN_SPEED, m_pos.y, i_map);
+        walls[Direction::Down] = map_collision(0, 0, m_pos.x, m_pos.y + PACMAN_SPEED, i_map);
 
-    if (get_dead())
-    {
-        m_Sprite.setColor(sf::Color::Red);
-    }
-    else if (i_game_won)
-    {
-        m_Sprite.setColor(sf::Color::Green);
-    }
-
-    window.draw(m_Sprite);
+        if (!walls[m_direction])
+        {
+            animation_timer = (animation_timer + 1) % ((unsigned short)(PACMAN_ANIMATION_FRAMES * PACMAN_ANIMATION_SPEED));
+        }
+    }    
 }
 
 void Paccy::set_pos(short x, short y)
@@ -71,6 +86,11 @@ unsigned short Paccy::get_energizer_timer() const
     return energizer_timer;
 }
 
+bool Paccy::get_animation_over() const
+{
+    return m_animation_over;
+}
+
 bool Paccy::get_energy() const
 {
     return energized;
@@ -82,6 +102,7 @@ void Paccy::reset_pacman()
     m_direction = Direction::Right;
     energized = false;
     energizer_timer = 0;
+    m_animation_over = false;
 }
 
 void Paccy::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, GhostManager& i_ghost_manager, float curr_fps)
