@@ -143,10 +143,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ConvertSketch.cpp" />
+    <ClCompile Include="src\DrawMap.cpp" />
+    <ClCompile Include="src\DrawText.cpp" />
+    <ClCompile Include="src\GhostManager.cpp" />
+    <ClCompile Include="src\Ghosts.cpp" />
+    <ClCompile Include="src\MapCollision.cpp" />
+    <ClCompile Include="src\Paccy.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="headers\ConvertSketch.hpp" />
+    <ClInclude Include="headers\DrawMap.hpp" />
+    <ClInclude Include="headers\DrawText.hpp" />
+    <ClInclude Include="headers\GhostManager.hpp" />
+    <ClInclude Include="headers\Ghosts.hpp" />
     <ClInclude Include="headers\global.hpp" />
+    <ClInclude Include="headers\MapCollision.hpp" />
+    <ClInclude Include="headers\Paccy.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
