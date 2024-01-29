@@ -12,11 +12,11 @@ GhostManager::GhostManager()
     ghost_clock.resume();
 }
 
-void GhostManager::Draw(sf::RenderWindow& i_win)
+void GhostManager::Draw(bool i_flash, sf::RenderWindow& i_win)
 {
     for (Ghosts& ghost : m_ghostArr)
     {
-        ghost.Draw_Ghost(i_win);
+        ghost.Draw_Ghost(i_flash, i_win);
     }
 }
 
@@ -233,6 +233,16 @@ void GhostManager::switch_frightened()
 sf::Time GhostManager::get_wave_timer() const
 {
     return wave_timer;
+}
+
+std::array<FRIGHT, 4> GhostManager::get_ghost_frightened() const
+{
+    std::array<FRIGHT, 4> op{};
+    for (unsigned iter = 0; iter < 4; iter++)
+    {
+        op[iter] = m_ghostArr[iter].get_frightened();
+    }
+    return op;
 }
 
 void GhostManager::pause_clock()

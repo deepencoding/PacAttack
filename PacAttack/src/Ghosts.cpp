@@ -9,45 +9,66 @@ Ghosts::Ghosts(GHOST N)
 {
 }
 
-void Ghosts::Draw_Ghost(sf::RenderWindow& window)
+void Ghosts::Draw_Ghost(bool i_flash, sf::RenderWindow& window)
 {
-    m_Sprite.setPosition(m_pos.x, m_pos.y);
-    if (m_Texture.loadFromFile("assets\\images\\Ghost16.png"))
-    {
-        m_Sprite.setTexture(m_Texture);
-        m_Sprite.setTextureRect(sf::IntRect(m_XIndex * m_TextureBit, m_YIndex * m_TextureBit, m_TextureBit, m_TextureBit));
-    }
-    else
-    {
-        std::cout << "Error loading ghost texture" << std::endl;
-    }
+    unsigned char body_frame = static_cast<unsigned char>(floor(animation_timer / (int)GHOST_ANIMATION_SPEED));
 
-    if (isFrightened == FRIGHT::LITTLE)
+    m_Texture.loadFromFile("assets\\images\\Ghost16.png");
+
+    m_bodySprite.setPosition(m_pos.x, m_pos.y);
+    m_bodySprite.setTexture(m_Texture);
+    m_bodySprite.setTextureRect(sf::IntRect(body_frame * TEXTURE_BIT, 0, TEXTURE_BIT, TEXTURE_BIT));
+    
+    m_faceSprite.setPosition(m_pos.x, m_pos.y);
+    m_faceSprite.setTexture(m_Texture);
+
+    if (isFrightened == FRIGHT::NONE)
     {
-        m_Sprite.setColor(sf::Color::Color(36, 36, 255, 255));
-        
-    }
-    else {
         switch (m_Name)
         {
         case GHOST::BLINKY:
-            m_Sprite.setColor(sf::Color::Red);
+            m_bodySprite.setColor(sf::Color::Red);
             break;
         case GHOST::CLYDE:
-            m_Sprite.setColor(sf::Color::Color(255, 182, 85, 255));
+            m_bodySprite.setColor(sf::Color::Color(255, 182, 85, 255));
             break;
         case GHOST::PINKY:
-            m_Sprite.setColor(sf::Color::Color(255, 182, 255, 255));
+            m_bodySprite.setColor(sf::Color::Color(255, 182, 255, 255));
             break;
         case GHOST::INKY:
-            m_Sprite.setColor(sf::Color::Cyan);
+            m_bodySprite.setColor(sf::Color::Cyan);
             break;
         default:
             break;
         }
+        m_faceSprite.setTextureRect(sf::IntRect(TEXTURE_BIT * m_direction, TEXTURE_BIT, TEXTURE_BIT, TEXTURE_BIT));
+        window.draw(m_bodySprite);
+    }
+    else if (isFrightened == FRIGHT::LITTLE)
+    {
+        m_bodySprite.setColor(sf::Color::Color(36, 36, 255, 255));
+        m_faceSprite.setTextureRect(sf::IntRect(TEXTURE_BIT * 4, TEXTURE_BIT, TEXTURE_BIT, TEXTURE_BIT));
+        if (i_flash && body_frame % 2 == 0)
+        {
+            m_bodySprite.setColor(sf::Color::White);
+            m_faceSprite.setColor(sf::Color::Red);
+        }
+        else
+        {
+            m_bodySprite.setColor(sf::Color::Color(36, 36, 255, 255));
+            m_faceSprite.setColor(sf::Color::White);
+        }
+        
+        window.draw(m_bodySprite);
+    }
+    else
+    {
+        m_faceSprite.setTextureRect(sf::IntRect(TEXTURE_BIT * m_direction, 2 * TEXTURE_BIT, TEXTURE_BIT, TEXTURE_BIT));
     }
 
-    window.draw(m_Sprite);
+    window.draw(m_faceSprite);
+
+    animation_timer = (animation_timer + 1) % (GHOST_ANIMATION_SPEED * GHOST_ANIMATION_FRAMES);
 }
 
 void Ghosts::set_pos(short x, short y)
@@ -97,6 +118,11 @@ void Ghosts::switch_frightened()
 MODE Ghosts::get_mode() const
 {
     return m_mode;
+}
+
+FRIGHT Ghosts::get_frightened() const
+{
+    return isFrightened;
 }
 
 bool Ghosts::pacman_collision(Position i_pacman_pos) const
@@ -149,7 +175,6 @@ void Ghosts::reset_ghost(Position i_house, Position i_gate)
     m_direction = Direction::Right;
     isFrightened = FRIGHT::NONE;
     fright_speed_timer = 0;
-    tunnel_speed_timer = 0;
     m_house = i_house;
     m_gate = i_gate;
     m_target = m_gate;
@@ -467,7 +492,8 @@ void Ghosts::update(unsigned char curr_lvl, std::array < std::array < Cell, MAP_
     //std::cout << fright_speed_timer << std::endl;
     ///*if (m_Name == GHOST::BLINKY)
     //    std::cout << m_direction << std::endl;*/
-    //tunnel_speed_timer = std::max(tunnel_speed_timer - 1, 0);
+    //
+    //  = std::max(tunnel_speed_timer - 1, 0);
     //if (tunnel_speed_timer == 0)
     //{
     //    to_move = true;
