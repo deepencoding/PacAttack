@@ -28,6 +28,7 @@ int main()
     bool gameNotStarted = true;
     unsigned char level = 1;
     long curr_score = -4400; // -4400 because it counts already empty cells
+    long high_score = curr_score;
 
     std::array<Position, 4> init_ghost_pos;
 
@@ -163,6 +164,7 @@ int main()
                         {
                             new_pellets -= 1;
                             curr_score +=  50;
+                            high_score = std::max(curr_score, high_score);
                             added_map[row][col] = true;
                         }
                     }
@@ -184,6 +186,7 @@ int main()
                         if (fright[iter] == FRIGHT::FULLY && added_ghost[iter] == false)
                         {
                             curr_score += 500;
+                            high_score = std::max(curr_score, high_score);
                             added_ghost[iter] = true;
                         }
                     }
@@ -238,6 +241,7 @@ int main()
                 if (gameNotStarted == false)
                 {
                     DrawText("Score: " + std::to_string(curr_score), window, false, 0.f, -0.6f, CELL_SIZE / 2);
+                    DrawText("HighScore: " + std::to_string(high_score), window, false, 10.f, -0.6f, CELL_SIZE / 2);
                 }
 
                 if (pacman.get_animation_over())
@@ -254,6 +258,8 @@ int main()
 
                 if (gameNotStarted)
                 {
+                    DrawText("PacAttack", window, false, 5.f, -0.6f, CELL_SIZE / 2);
+                    DrawText("-by deepencoding", window, false, 10.5f, -0.3f, CELL_SIZE / 3);
                     DrawText("Enter or Space", window, true, true);
                 }
 
