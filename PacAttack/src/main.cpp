@@ -3,6 +3,7 @@
 #include <string>
 #include <chrono>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "../headers/global.hpp"
 #include "../headers/Paccy.hpp"
@@ -37,6 +38,9 @@ int main()
     unsigned lag = 0;
     std::chrono::time_point<std::chrono::steady_clock> prev_time;
 
+    short pellets = 146 + 83;
+    short energizers = 4;
+
     std::array<std::string, MAP_HEIGHT> mapSketch = {
         " ################### ",
         " #........#........# ",
@@ -65,6 +69,34 @@ int main()
     GhostManager manager;
     Paccy pacman;
     manager.pause_clock();
+
+    sf::Sound menu_music;
+    sf::SoundBuffer menu_sound_buffer;
+    menu_sound_buffer.loadFromFile("assets\\sound\\pacman-beginning\\pacman_beginning.wav");
+    menu_music.setVolume(30);
+
+    menu_music.setBuffer(menu_sound_buffer);
+    menu_music.setLoop(true);
+    menu_music.play();
+
+    sf::Sound chomp;
+    sf::SoundBuffer chomp_buffer;
+    chomp_buffer.loadFromFile("assets\\sound\\pacman-chomp\\pacman_chomp.wav");
+    chomp.setBuffer(chomp_buffer);
+    chomp.setLoop(true);
+    chomp.setVolume(30);
+
+    sf::Sound death;
+    sf::SoundBuffer death_buffer;
+    death_buffer.loadFromFile("assets\\sound\\pacman-death\\pacman_death.wav");
+    death.setBuffer(death_buffer);
+
+    sf::Sound eatghost;
+    sf::SoundBuffer eatghost_buffer;
+    eatghost_buffer.loadFromFile("assets\\sound\\pacman-eatghost\\pacman_eatghost.wav");
+    eatghost.setBuffer(eatghost_buffer);
+
+
 
     std::array<std::array<bool, MAP_WIDTH>, MAP_HEIGHT> added_map{};
     std::array<std::array<Cell, MAP_WIDTH>, MAP_HEIGHT> world = convert_sketch(mapSketch, pacman, init_ghost_pos);
@@ -117,6 +149,8 @@ int main()
                 
                 // short cnt = 0;
                 // curr_score -= 4400;
+                short new_pellets = pellets; // init empty cells
+                short new_energizers = energizers;
                 for (unsigned row = 0; row < MAP_HEIGHT; row++)
                 {
                     for (unsigned col = 0; col < MAP_WIDTH; col++)
@@ -127,10 +161,20 @@ int main()
                         }
                         else if (world[row][col] == Cell::Empty && added_map[row][col] == false)
                         {
+                            new_pellets -= 1;
                             curr_score +=  50;
                             added_map[row][col] = true;
                         }
                     }
+                }
+                if (new_pellets < pellets)
+                {
+                    // chomp.setPlayingOffset(chomp.getPlayingOffset());
+                    if (chomp.getStatus() != sf::SoundSource::Status::Playing)
+                    {
+                        chomp.play();
+                    }
+                    pellets = new_pellets;
                 }
                 std::array<FRIGHT, 4> fright = manager.get_ghost_frightened();
                 if (pacman.get_energy())
@@ -168,6 +212,7 @@ int main()
                 world = convert_sketch(mapSketch, pacman, init_ghost_pos);
                 manager.reset(level, init_ghost_pos);
                 pacman.reset_pacman();
+                chomp.stop();
                 for (unsigned row = 0; row < MAP_HEIGHT; row++)
                 {
                     for (unsigned col = 0; col < MAP_WIDTH; col++)
@@ -210,6 +255,11 @@ int main()
                 if (gameNotStarted)
                 {
                     DrawText("Enter or Space", window, true, true);
+                }
+
+                if (gameNotStarted == false)
+                {
+                    menu_music.stop();
                 }
 
                 window.display();

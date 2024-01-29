@@ -10,6 +10,7 @@ Paccy::Paccy()
     energized = false;
     energizer_timer = 0;
     m_animation_over = false;
+
 }
 
 void Paccy::Draw_Paccy(bool i_game_won, sf::RenderWindow& window, std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map)

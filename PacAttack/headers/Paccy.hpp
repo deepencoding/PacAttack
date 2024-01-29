@@ -2,6 +2,7 @@
 
 #include <array>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 #include "global.hpp"
 #include "GhostManager.hpp"
