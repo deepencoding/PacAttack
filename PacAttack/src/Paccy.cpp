@@ -82,7 +82,7 @@ bool Paccy::get_dead() const
     return m_dead;
 }
 
-unsigned short Paccy::get_energizer_timer() const
+unsigned short Paccy::get_energizer_timer()
 {
     return energizer_timer;
 }

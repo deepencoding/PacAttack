@@ -13,7 +13,7 @@ public:
 	GhostManager();
 	void Draw(bool, sf::RenderWindow&);
 	void reset(unsigned char, std::array<Position, 4>);
-	void Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, unsigned char);
+	void Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >&, Paccy&, unsigned char, bool);
 	void switch_ghost_mode();
 	MODE get_ghost_mode();
 	void switch_frightened();
@@ -21,6 +21,7 @@ public:
 	std::array<FRIGHT, 4> get_ghost_frightened() const;
 	void pause_clock();
 	void resume_clock();
+	void reset_clock();
 private:
 	std::array <Ghosts, 4> m_ghostArr;
 	unsigned short curr_wave;
