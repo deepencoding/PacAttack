@@ -161,6 +161,13 @@
     <ClInclude Include="headers\global.hpp" />
     <ClInclude Include="headers\MapCollision.hpp" />
     <ClInclude Include="headers\Paccy.hpp" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\icon\Pacman_1.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

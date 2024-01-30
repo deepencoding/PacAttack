@@ -21,7 +21,7 @@ public:
 	bool get_dead() const;
 	bool get_energy() const;
 	void reset_pacman();
-	unsigned short get_energizer_timer() const;
+	unsigned short get_energizer_timer();
 	bool get_animation_over() const;
 
 private:

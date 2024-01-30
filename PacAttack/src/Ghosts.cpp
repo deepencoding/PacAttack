@@ -24,6 +24,7 @@ void Ghosts::Draw_Ghost(bool i_flash, sf::RenderWindow& window)
 
     if (isFrightened == FRIGHT::NONE)
     {
+        m_faceSprite.setColor(sf::Color::White);
         switch (m_Name)
         {
         case GHOST::BLINKY:
@@ -58,6 +59,7 @@ void Ghosts::Draw_Ghost(bool i_flash, sf::RenderWindow& window)
             m_bodySprite.setColor(sf::Color::Color(36, 36, 255, 255));
             m_faceSprite.setColor(sf::Color::White);
         }
+
         
         window.draw(m_bodySprite);
     }
