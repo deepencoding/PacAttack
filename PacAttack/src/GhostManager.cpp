@@ -44,163 +44,170 @@ void GhostManager::reset(unsigned char curr_lvl, std::array<Position, 4> init_gh
     }
 }
 
-void GhostManager::Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, Paccy& i_pacman, unsigned char curr_lvl)
+void GhostManager::Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, Paccy& i_pacman, unsigned char curr_lvl, bool i_gameNotStarted)
 {
     // std::cout << (unsigned)wave_timer.asSeconds() << std::endl;
     // std::cout << (unsigned)ghost_clock.getElapsedTime().asSeconds() << std::endl;
     // std::cout << ghost_mode << std::endl;
     ghost_mode = get_ghost_mode();
-    if (curr_lvl == 1)
+    if (i_gameNotStarted == false)
     {
-        if (curr_wave == 1)
+        if (curr_lvl == 1)
         {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+            if (curr_wave == 1)
             {
-                if (ghost_mode == MODE::SCATTER)
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
                 {
-                    wave_timer = sf::seconds(20.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-                else
-                {
-                    curr_wave++;
-                    wave_timer = sf::seconds(7.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::seconds(7.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
                 }
             }
-        }
-        else if (curr_wave == 2 || curr_wave == 3)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+            else if (curr_wave == 2 || curr_wave == 3)
             {
-                if (ghost_mode == MODE::SCATTER)
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
                 {
-                    wave_timer = sf::seconds(20.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
 
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::seconds(5.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
                 }
-                else
+            }
+            else if (curr_wave == 4)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
                 {
-                    curr_wave++;
-                    wave_timer = sf::seconds(5.f);
-                    ghost_clock.reset(true);
+                    perma_chase = true;
                     switch_ghost_mode();
                 }
             }
         }
-        else if (curr_wave == 4)
+        else if (curr_lvl == 2)
         {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+            if (curr_wave == 1)
             {
-                perma_chase = true;
-                switch_ghost_mode();
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::seconds(7.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                }
+            }
+            else if (curr_wave == 2 || curr_wave == 3)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        ghost_clock.reset(true);
+                        if (curr_wave == 3)
+                            wave_timer = sf::seconds(1033.f);
+                        switch_ghost_mode();
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::milliseconds(16.67f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                }
+            }
+            else if (curr_wave == 4)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    perma_chase = true;
+                    switch_ghost_mode();
+                }
+            }
+        }
+        else if (curr_lvl >= 5)
+        {
+            if (curr_wave == 1)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::seconds(7.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                }
+            }
+            else if (curr_wave == 2 || curr_wave == 3)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    if (ghost_mode == MODE::SCATTER)
+                    {
+                        wave_timer = sf::seconds(20.f);
+                        if (curr_wave == 3)
+                            wave_timer = sf::seconds(1037.f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                    else
+                    {
+                        curr_wave++;
+                        wave_timer = sf::milliseconds(16.67f);
+                        ghost_clock.reset(true);
+                        switch_ghost_mode();
+                    }
+                }
+            }
+            else if (curr_wave == 4)
+            {
+                if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
+                {
+                    perma_chase = true;
+                    switch_ghost_mode();
+                }
             }
         }
     }
-    else if (curr_lvl == 2)
+    else
     {
-        if (curr_wave == 1)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                if (ghost_mode == MODE::SCATTER)
-                {
-                    wave_timer = sf::seconds(20.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-                else
-                {
-                    curr_wave++;
-                    wave_timer = sf::seconds(7.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-            }
-        }
-        else if (curr_wave == 2 || curr_wave == 3)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                if (ghost_mode == MODE::SCATTER)
-                {
-                    wave_timer = sf::seconds(20.f);
-                    ghost_clock.reset(true);
-                    if (curr_wave == 3)
-                        wave_timer = sf::seconds(1033.f);
-                    switch_ghost_mode();
-                }
-                else
-                {
-                    curr_wave++;
-                    wave_timer = sf::milliseconds(16.67f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-            }
-        }
-        else if (curr_wave == 4)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                perma_chase = true;
-                switch_ghost_mode();
-            }
-        }
-    }
-    else if (curr_lvl >= 5)
-    {
-        if (curr_wave == 1)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                if (ghost_mode == MODE::SCATTER)
-                {
-                    wave_timer = sf::seconds(20.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-                else
-                {
-                    curr_wave++;
-                    wave_timer = sf::seconds(7.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-            }
-        }
-        else if (curr_wave == 2 || curr_wave == 3)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                if (ghost_mode == MODE::SCATTER)
-                {
-                    wave_timer = sf::seconds(20.f);
-                    if (curr_wave == 3)
-                        wave_timer = sf::seconds(1037.f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-                else
-                {
-                    curr_wave++;
-                    wave_timer = sf::milliseconds(16.67f);
-                    ghost_clock.reset(true);
-                    switch_ghost_mode();
-                }
-            }
-        }
-        else if (curr_wave == 4)
-        {
-            if ((unsigned)ghost_clock.getElapsedTime().asSeconds() == (unsigned)wave_timer.asSeconds() && perma_chase == false)
-            {
-                perma_chase = true;
-                switch_ghost_mode();
-            }
-        }
+        ghost_clock.reset();
     }
 
     for (Ghosts& ghost : m_ghostArr)
@@ -253,4 +260,9 @@ void GhostManager::pause_clock()
 void GhostManager::resume_clock()
 {
     ghost_clock.resume();
+}
+
+void GhostManager::reset_clock()
+{
+    ghost_clock.reset();
 }
