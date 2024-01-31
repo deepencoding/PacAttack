@@ -74,7 +74,7 @@ Direction Paccy::get_dir() const
 void Paccy::set_dead(bool i_dead)
 {
     m_dead = i_dead;
-    std::cout << "PACMAN DEAD" << std::endl;
+    // std::cout << "PACMAN DEAD" << std::endl;
 }
 
 bool Paccy::get_dead() const

@@ -13,7 +13,7 @@
 #include "../headers/GhostManager.hpp"
 #include "../headers/DrawText.hpp"
 
-int main()
+int WinMain()
 {
     // ========================= Initialize game =========================
     sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH * SCREEN_RESIZE_FACTOR, (SCREEN_HEIGHT + CELL_SIZE) * SCREEN_RESIZE_FACTOR), "PacAttack - Pacman Clone", sf::Style::Close);
