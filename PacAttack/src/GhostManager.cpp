@@ -46,7 +46,10 @@ void GhostManager::reset(unsigned char curr_lvl, std::array<Position, 4> init_gh
 
 void GhostManager::Update(std::array < std::array < Cell, MAP_WIDTH >, MAP_HEIGHT >& i_map, Paccy& i_pacman, unsigned char curr_lvl, bool i_gameNotStarted)
 {
-    // std::cout << (unsigned)wave_timer.asSeconds() << std::endl;
+    // std::
+    // 
+    // 
+    //  << (unsigned)wave_timer.asSeconds() << std::endl;
     // std::cout << (unsigned)ghost_clock.getElapsedTime().asSeconds() << std::endl;
     // std::cout << ghost_mode << std::endl;
     ghost_mode = get_ghost_mode();
