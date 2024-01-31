@@ -42,10 +42,9 @@ The project follows a specific file structure for organization:
 ![](https://media.githubusercontent.com/media/deepencoding/PacAttack/dev/images-github/gameplay_2_2.png)
 
 ### To play the game
-Go to the releases page [here](https://github.com/deepencoding/PacAttack/releases/tag/v1.0.0) and download the `PacAttack-binaries-v1.0.0.zip
-` file.\
+Go to the releases page [here](https://github.com/deepencoding/PacAttack/releases/tag/v1.0.0) and download the `PacAttack-binaries-v1.0.0.zip` file and unzip it.\
 OR\
-[download](https://github.com/deepencoding/PacAttack/releases/download/v1.0.0/PacAttack-binaries-v1.0.0.zip) the binaries directly.
+[download](https://github.com/deepencoding/PacAttack/releases/download/v1.0.0/PacAttack-binaries-v1.0.0.zip) the binaries directly and unzip it.
 
 ### To build and compile the PacAttack game, follow these steps:
 
