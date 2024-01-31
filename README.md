@@ -42,18 +42,13 @@ The project follows a specific file structure for organization:
 ![](https://media.githubusercontent.com/media/deepencoding/PacAttack/dev/images-github/gameplay_2_2.png)
 
 ### To play the game
-Go to the releases page ![here](https://github.com/deepencoding/PacAttack/releases/tag/v1.0.0) and download the `PacAttack-binaries-v1.0.0.zip
-` file.\
+Go to the releases page [here](https://github.com/deepencoding/PacAttack/releases/tag/v1.0.0) and download the `PacAttack-binaries-v1.0.0.zip` file and unzip it.\
 OR\
-![download](https://github.com/deepencoding/PacAttack/releases/download/v1.0.0/PacAttack-binaries-v1.0.0.zip) the binaries directly.
+[download](https://github.com/deepencoding/PacAttack/releases/download/v1.0.0/PacAttack-binaries-v1.0.0.zip) the binaries directly and unzip it.
 
 ### To build and compile the PacAttack game, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/deepencoding/PacAttack.git`
-2. Navigate to the PacAttack directory: `cd PacAttack`
-3. Compile the source code: `g++ -o PacAttack src/*.cpp -Iheaders -lsfml-graphics -lsfml-window -lsfml-system`
-4. Run the compiled executable: `./PacAttack`\
-OR
 2. Open the `PacAttack.sln` file in Visual Studio and compile the program in their.
 3. The `.exe` binaries will be located in `$(SolutionDir)Build\$(Platform)\$(Configuration)\bin` folder.
 4. Run the `PacAttack.exe` file to play the game. 
